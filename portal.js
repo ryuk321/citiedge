@@ -1,99 +1,44 @@
 // File upload functionality for all portals
 
-// Student Portal Upload
+// Generic upload function
+function uploadFiles(portalType, portalName) {
+    const fileInput = document.getElementById(portalType + 'FileInput');
+    const fileList = document.getElementById(portalType + 'FileList');
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select files to upload');
+        return;
+    }
+    
+    fileList.innerHTML = '';
+    
+    for (let i = 0; i < fileInput.files.length; i++) {
+        const file = fileInput.files[i];
+        const fileItem = createFileItem(file);
+        fileList.appendChild(fileItem);
+    }
+    
+    setTimeout(() => {
+        alert(`Successfully uploaded ${fileInput.files.length} file(s) to ${portalName}!`);
+        fileInput.value = '';
+    }, 500);
+}
+
+// Portal-specific upload functions
 function uploadStudentFiles() {
-    const fileInput = document.getElementById('studentFileInput');
-    const fileList = document.getElementById('studentFileList');
-    
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select files to upload');
-        return;
-    }
-    
-    fileList.innerHTML = '';
-    
-    for (let i = 0; i < fileInput.files.length; i++) {
-        const file = fileInput.files[i];
-        const fileItem = createFileItem(file);
-        fileList.appendChild(fileItem);
-    }
-    
-    setTimeout(() => {
-        alert(`Successfully uploaded ${fileInput.files.length} file(s) to Student Portal!`);
-        fileInput.value = '';
-    }, 500);
+    uploadFiles('student', 'Student Portal');
 }
 
-// Agent Portal Upload
 function uploadAgentFiles() {
-    const fileInput = document.getElementById('agentFileInput');
-    const fileList = document.getElementById('agentFileList');
-    
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select files to upload');
-        return;
-    }
-    
-    fileList.innerHTML = '';
-    
-    for (let i = 0; i < fileInput.files.length; i++) {
-        const file = fileInput.files[i];
-        const fileItem = createFileItem(file);
-        fileList.appendChild(fileItem);
-    }
-    
-    setTimeout(() => {
-        alert(`Successfully uploaded ${fileInput.files.length} file(s) to Agent Portal!`);
-        fileInput.value = '';
-    }, 500);
+    uploadFiles('agent', 'Agent Portal');
 }
 
-// Staff Portal Upload
 function uploadStaffFiles() {
-    const fileInput = document.getElementById('staffFileInput');
-    const fileList = document.getElementById('staffFileList');
-    
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select files to upload');
-        return;
-    }
-    
-    fileList.innerHTML = '';
-    
-    for (let i = 0; i < fileInput.files.length; i++) {
-        const file = fileInput.files[i];
-        const fileItem = createFileItem(file);
-        fileList.appendChild(fileItem);
-    }
-    
-    setTimeout(() => {
-        alert(`Successfully uploaded ${fileInput.files.length} file(s) to Staff Portal!`);
-        fileInput.value = '';
-    }, 500);
+    uploadFiles('staff', 'Staff Portal');
 }
 
-// Alumni Portal Upload
 function uploadAlumniFiles() {
-    const fileInput = document.getElementById('alumniFileInput');
-    const fileList = document.getElementById('alumniFileList');
-    
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select files to upload');
-        return;
-    }
-    
-    fileList.innerHTML = '';
-    
-    for (let i = 0; i < fileInput.files.length; i++) {
-        const file = fileInput.files[i];
-        const fileItem = createFileItem(file);
-        fileList.appendChild(fileItem);
-    }
-    
-    setTimeout(() => {
-        alert(`Successfully uploaded ${fileInput.files.length} file(s) to Alumni Portal!`);
-        fileInput.value = '';
-    }, 500);
+    uploadFiles('alumni', 'Alumni Portal');
 }
 
 // Helper function to create file item display
@@ -154,20 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const fileInput = this.querySelector('input[type="file"]');
             if (fileInput && e.dataTransfer.files.length > 0) {
-                fileInput.files = e.dataTransfer.files;
-                
-                // Trigger file display
-                const fileListId = fileInput.id.replace('Input', 'List');
-                const fileList = document.getElementById(fileListId);
-                
-                if (fileList) {
-                    fileList.innerHTML = '';
-                    for (let i = 0; i < fileInput.files.length; i++) {
-                        const file = fileInput.files[i];
-                        const fileItem = createFileItem(file);
-                        fileList.appendChild(fileItem);
-                    }
+                // Create a new DataTransfer object and add files
+                const dataTransfer = new DataTransfer();
+                for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                    dataTransfer.items.add(e.dataTransfer.files[i]);
                 }
+                fileInput.files = dataTransfer.files;
+                
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
             }
         });
     });
