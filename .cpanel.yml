@@ -1,0 +1,9 @@
+
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/citedge/domains/portal.citiedgecollege.co.uk/public_html
+    - /bin/cp -R .next $DEPLOYPATH
+    - /bin/cp server.js $DEPLOYPATH
+    - /bin/cp package.json $DEPLOYPATH
+    - /bin/cp -R public $DEPLOYPATH
+    - /usr/bin/touch $DEPLOYPATH/tmp/restart.txt
