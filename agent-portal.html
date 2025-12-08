@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Portal - Citiedge University</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💼 Agent Portal</h1>
+            <p class="subtitle">Manage applications and student interactions</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">← Back to Portal Selection</a>
+        </nav>
+
+        <main>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📋 Application Overview</h3>
+                    <ul>
+                        <li>Total Applications: 156</li>
+                        <li>Pending Review: 23</li>
+                        <li>Approved: 98</li>
+                        <li>Rejected: 35</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>👥 Student Inquiries</h3>
+                    <ul>
+                        <li>New Messages: 12</li>
+                        <li>Awaiting Response: 8</li>
+                        <li>Scheduled Meetings: 5</li>
+                        <li>Resolved Today: 15</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📊 This Week's Stats</h3>
+                    <ul>
+                        <li>Applications Processed: 47</li>
+                        <li>Students Contacted: 89</li>
+                        <li>Campus Tours Scheduled: 12</li>
+                        <li>Documents Reviewed: 134</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>⚡ Quick Actions</h3>
+                    <ul>
+                        <li>Schedule Campus Tour</li>
+                        <li>Send Bulk Email</li>
+                        <li>Generate Reports</li>
+                        <li>Update Application Status</li>
+                    </ul>
+                </div>
+            </div>
+
+            <section style="margin-top: 40px;">
+                <h3 style="color: #333; margin-bottom: 20px;">🔍 Recent Applications</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Applicant Name</th>
+                            <th>Program</th>
+                            <th>Submission Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Smith</td>
+                            <td>Computer Science</td>
+                            <td>Dec 5, 2024</td>
+                            <td><span class="status-badge status-pending">Pending Review</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td>Business Administration</td>
+                            <td>Dec 4, 2024</td>
+                            <td><span class="status-badge status-active">Under Review</span></td>
+                        </tr>
+                        <tr>
+                            <td>Michael Chen</td>
+                            <td>Engineering</td>
+                            <td>Dec 3, 2024</td>
+                            <td><span class="status-badge status-completed">Approved</span></td>
+                        </tr>
+                        <tr>
+                            <td>Emily Davis</td>
+                            <td>Mathematics</td>
+                            <td>Dec 2, 2024</td>
+                            <td><span class="status-badge status-pending">Pending Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="upload-section">
+                <h3>📤 Upload Documents</h3>
+                <p style="color: #666; margin-bottom: 20px;">Upload application materials, verification documents, or reports</p>
+                
+                <div class="upload-area" role="button" tabindex="0" aria-label="Click to select files or drag and drop files here" onclick="document.getElementById('agentFileInput').click()" onkeypress="if(event.key==='Enter'||event.key===' ') document.getElementById('agentFileInput').click()">
+                    <div style="font-size: 3em; margin-bottom: 10px;">📁</div>
+                    <p style="color: #667eea; font-weight: 600;">Click to select files or drag and drop</p>
+                    <p style="color: #999; font-size: 0.9em;">Supported formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG</p>
+                    <input type="file" id="agentFileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                </div>
+
+                <button class="upload-button" onclick="uploadAgentFiles()">Upload Selected Files</button>
+
+                <div class="file-list" id="agentFileList"></div>
+            </div>
+
+            <section style="margin-top: 40px;">
+                <h3 style="color: #333; margin-bottom: 20px;">📂 Document Repository</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Category</th>
+                            <th>Upload Date</th>
+                            <th>Access</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Application_Guidelines_2024.pdf</td>
+                            <td>Guidelines</td>
+                            <td>Nov 15, 2024</td>
+                            <td><span class="status-badge status-active">Public</span></td>
+                        </tr>
+                        <tr>
+                            <td>Enrollment_Report_Q4.xlsx</td>
+                            <td>Reports</td>
+                            <td>Dec 1, 2024</td>
+                            <td><span class="status-badge status-pending">Internal</span></td>
+                        </tr>
+                        <tr>
+                            <td>Student_Verification_Forms.pdf</td>
+                            <td>Forms</td>
+                            <td>Nov 20, 2024</td>
+                            <td><span class="status-badge status-active">Public</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Citiedge University. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="portal.js"></script>
+</body>
+</html>

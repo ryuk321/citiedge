@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Citiedge University</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Student Portal</h1>
+            <p class="subtitle">Access your courses, grades, and academic information</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">← Back to Portal Selection</a>
+        </nav>
+
+        <main>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📚 My Courses</h3>
+                    <ul>
+                        <li>Computer Science 101 - <span class="status-badge status-active">Active</span></li>
+                        <li>Mathematics 201 - <span class="status-badge status-active">Active</span></li>
+                        <li>Data Structures 301 - <span class="status-badge status-active">Active</span></li>
+                        <li>Web Development 202 - <span class="status-badge status-active">Active</span></li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📊 Recent Grades</h3>
+                    <ul>
+                        <li>Assignment 1 - CS101: A (95%)</li>
+                        <li>Midterm - Math201: B+ (87%)</li>
+                        <li>Project - Web202: A- (92%)</li>
+                        <li>Quiz 3 - DS301: A (98%)</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📅 Upcoming Deadlines</h3>
+                    <ul>
+                        <li>Final Project - CS101: Dec 15, 2024</li>
+                        <li>Research Paper - Math201: Dec 18, 2024</li>
+                        <li>Lab Assignment - DS301: Dec 12, 2024</li>
+                        <li>Portfolio - Web202: Dec 20, 2024</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📢 Announcements</h3>
+                    <ul>
+                        <li>Winter break schedule updated</li>
+                        <li>New library hours effective Dec 1</li>
+                        <li>Career fair on December 10</li>
+                        <li>Campus wifi maintenance on Dec 8</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <h3>📤 Upload Documents</h3>
+                <p style="color: #666; margin-bottom: 20px;">Upload assignments, projects, or other documents</p>
+                
+                <div class="upload-area" role="button" tabindex="0" aria-label="Click to select files or drag and drop files here" onclick="document.getElementById('studentFileInput').click()" onkeypress="if(event.key==='Enter'||event.key===' ') document.getElementById('studentFileInput').click()">
+                    <div style="font-size: 3em; margin-bottom: 10px;">📁</div>
+                    <p style="color: #667eea; font-weight: 600;">Click to select files or drag and drop</p>
+                    <p style="color: #999; font-size: 0.9em;">Supported formats: PDF, DOC, DOCX, JPG, PNG</p>
+                    <input type="file" id="studentFileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                </div>
+
+                <button class="upload-button" onclick="uploadStudentFiles()">Upload Selected Files</button>
+
+                <div class="file-list" id="studentFileList"></div>
+            </div>
+
+            <section style="margin-top: 40px;">
+                <h3 style="color: #333; margin-bottom: 20px;">📂 My Uploaded Documents</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Course</th>
+                            <th>Upload Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Assignment1_Final.pdf</td>
+                            <td>CS101</td>
+                            <td>Dec 1, 2024</td>
+                            <td><span class="status-badge status-completed">Submitted</span></td>
+                        </tr>
+                        <tr>
+                            <td>Math_Midterm_Solutions.pdf</td>
+                            <td>Math201</td>
+                            <td>Nov 28, 2024</td>
+                            <td><span class="status-badge status-completed">Graded</span></td>
+                        </tr>
+                        <tr>
+                            <td>WebDev_Project.zip</td>
+                            <td>Web202</td>
+                            <td>Nov 25, 2024</td>
+                            <td><span class="status-badge status-pending">Under Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Citiedge University. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="portal.js"></script>
+</body>
+</html>

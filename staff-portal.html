@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal - Citiedge University</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👔 Staff Portal</h1>
+            <p class="subtitle">Administrative tools and document management</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">← Back to Portal Selection</a>
+        </nav>
+
+        <main>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📊 System Overview</h3>
+                    <ul>
+                        <li>Total Students: 2,847</li>
+                        <li>Active Staff: 145</li>
+                        <li>Courses Offered: 312</li>
+                        <li>Active Alumni: 8,524</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>📝 Department Tasks</h3>
+                    <ul>
+                        <li>Pending Approvals: 18</li>
+                        <li>Document Reviews: 25</li>
+                        <li>Schedule Updates: 7</li>
+                        <li>Staff Requests: 12</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>💰 Financial Overview</h3>
+                    <ul>
+                        <li>Budget Allocated: $2.4M</li>
+                        <li>Expenditure: $1.8M</li>
+                        <li>Pending Invoices: 23</li>
+                        <li>Payroll Status: Current</li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>🔔 System Alerts</h3>
+                    <ul>
+                        <li>Maintenance scheduled Dec 10</li>
+                        <li>New policy updates available</li>
+                        <li>Annual report due Dec 15</li>
+                        <li>Staff meeting on Dec 12</li>
+                    </ul>
+                </div>
+            </div>
+
+            <section style="margin-top: 40px;">
+                <h3 style="color: #333; margin-bottom: 20px;">👥 Staff Directory</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dr. Amanda Wilson</td>
+                            <td>Computer Science</td>
+                            <td>Department Head</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. Robert Martinez</td>
+                            <td>Mathematics</td>
+                            <td>Senior Professor</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Dr. Lisa Anderson</td>
+                            <td>Business Admin</td>
+                            <td>Associate Professor</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Prof. James Taylor</td>
+                            <td>Engineering</td>
+                            <td>Department Head</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="upload-section">
+                <h3>📤 Upload Documents</h3>
+                <p style="color: #666; margin-bottom: 20px;">Upload administrative documents, reports, policies, or records</p>
+                
+                <div class="upload-area" role="button" tabindex="0" aria-label="Click to select files or drag and drop files here" onclick="document.getElementById('staffFileInput').click()" onkeypress="if(event.key==='Enter'||event.key===' ') document.getElementById('staffFileInput').click()">
+                    <div style="font-size: 3em; margin-bottom: 10px;">📁</div>
+                    <p style="color: #667eea; font-weight: 600;">Click to select files or drag and drop</p>
+                    <p style="color: #999; font-size: 0.9em;">Supported formats: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX</p>
+                    <input type="file" id="staffFileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                </div>
+
+                <button class="upload-button" onclick="uploadStaffFiles()">Upload Selected Files</button>
+
+                <div class="file-list" id="staffFileList"></div>
+            </div>
+
+            <section style="margin-top: 40px;">
+                <h3 style="color: #333; margin-bottom: 20px;">📂 Administrative Documents</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Category</th>
+                            <th>Last Modified</th>
+                            <th>Access Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Staff_Handbook_2024.pdf</td>
+                            <td>Policy</td>
+                            <td>Nov 1, 2024</td>
+                            <td><span class="status-badge status-active">Staff Only</span></td>
+                        </tr>
+                        <tr>
+                            <td>Annual_Budget_Report.xlsx</td>
+                            <td>Financial</td>
+                            <td>Dec 1, 2024</td>
+                            <td><span class="status-badge status-pending">Admin Only</span></td>
+                        </tr>
+                        <tr>
+                            <td>Curriculum_Guidelines.pdf</td>
+                            <td>Academic</td>
+                            <td>Oct 15, 2024</td>
+                            <td><span class="status-badge status-active">Staff Only</span></td>
+                        </tr>
+                        <tr>
+                            <td>Emergency_Procedures.pdf</td>
+                            <td>Safety</td>
+                            <td>Sep 10, 2024</td>
+                            <td><span class="status-badge status-active">Public</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Citiedge University. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="portal.js"></script>
+</body>
+</html>
