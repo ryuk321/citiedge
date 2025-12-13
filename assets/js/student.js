@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 /**
  * Switch between tabs
  */
-function switchTab(tabName) {
+window.switchTab = function(tabName) {
     // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.style.display = 'none';
@@ -30,8 +30,12 @@ function switchTab(tabName) {
     document.getElementById(tabName + '-tab').style.display = 'block';
     
     // Add active class to clicked button
-    event.target.classList.add('active');
-}
+    const clickedButton = Array.from(document.querySelectorAll('.tab-button'))
+        .find(btn => btn.getAttribute('onclick')?.includes(tabName));
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+};
 
 /**
  * Load dashboard with statistics
