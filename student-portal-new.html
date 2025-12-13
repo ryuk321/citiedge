@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Citiedge University</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="components/components.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Student Portal</h1>
+            <p class="subtitle">Access your courses, grades, and academic information</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html">← Back to Portal Selection</a>
+        </nav>
+
+        <main>
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-button active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+                <button class="tab-button" onclick="switchTab('moodle')">📚 My Courses (Moodle)</button>
+                <button class="tab-button" onclick="switchTab('timetable')">🗓️ Timetable</button>
+                <button class="tab-button" onclick="switchTab('assignments')">📝 Assignments</button>
+                <button class="tab-button" onclick="switchTab('grades')">📈 Grades</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="dashboard-grid" id="dashboardStats"></div>
+                
+                <div style="margin-top: 30px;" id="upcomingDeadlines"></div>
+            </div>
+
+            <!-- Moodle Tab -->
+            <div id="moodle-tab" class="tab-content" style="display: none;">
+                <h2 style="color: #333; margin-bottom: 20px;">📚 My Courses</h2>
+                <p style="color: #666; margin-bottom: 30px;">Access your course materials, lectures, and resources</p>
+                
+                <div id="coursesList"></div>
+            </div>
+
+            <!-- Timetable Tab -->
+            <div id="timetable-tab" class="tab-content" style="display: none;">
+                <h2 style="color: #333; margin-bottom: 20px;">🗓️ Weekly Timetable</h2>
+                <p style="color: #666; margin-bottom: 30px;">Your schedule for the current week</p>
+                
+                <div id="timetableContainer"></div>
+            </div>
+
+            <!-- Assignments Tab -->
+            <div id="assignments-tab" class="tab-content" style="display: none;">
+                <h2 style="color: #333; margin-bottom: 20px;">📝 My Assignments</h2>
+                
+                <div id="assignmentsContainer"></div>
+
+                <!-- Upload Section -->
+                <div class="upload-section" style="margin-top: 30px;">
+                    <h3>📤 Submit Assignment</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Upload your assignment files</p>
+                    
+                    <div class="upload-area" role="button" tabindex="0" aria-label="Click to select files or drag and drop files here" onclick="document.getElementById('studentFileInput').click()" onkeypress="if(event.key==='Enter'||event.key===' ') document.getElementById('studentFileInput').click()">
+                        <div style="font-size: 3em; margin-bottom: 10px;">📁</div>
+                        <p style="color: #667eea; font-weight: 600;">Click to select files or drag and drop</p>
+                        <p style="color: #999; font-size: 0.9em;">Supported formats: PDF, DOC, DOCX, ZIP</p>
+                        <input type="file" id="studentFileInput" multiple accept=".pdf,.doc,.docx,.zip">
+                    </div>
+
+                    <button class="upload-button" onclick="uploadStudentFiles()">Upload Selected Files</button>
+
+                    <div class="file-list" id="studentFileList"></div>
+                </div>
+            </div>
+
+            <!-- Grades Tab -->
+            <div id="grades-tab" class="tab-content" style="display: none;">
+                <h2 style="color: #333; margin-bottom: 20px;">📈 My Grades</h2>
+                
+                <div id="gradesContainer"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Citiedge University. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="api/api.js"></script>
+    <script src="components/components.js"></script>
+    <script src="portal.js"></script>
+    <script src="assets/js/student.js"></script>
+</body>
+</html>
