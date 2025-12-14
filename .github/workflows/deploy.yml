@@ -1,0 +1,54 @@
+
+name: Deploy Citiedge Portal on push
+
+on:
+  push:
+    branches: [ "main" ]   # change if you deploy from another branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install & build (Next.js)
+        run: |
+          npm ci
+          npm run build
+
+      # Securely upload compiled files + runtime files to your server
+      - name: Upload via SCP
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          # Upload only what's needed to run in production
+          source: ".next,public,server.js,package.json,next.config.*"
+          target: "${{ secrets.SERVER_PATH }}"
+
+      # Restart Passenger (cPanel) so new code goes live
+      - name: Restart app via SSH (Passenger)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd "${{ secrets.SERVER_PATH }}"
+            # If dependencies changed, install them (idempotent)
+            if [ -f package.json ]; then
+              npm ci --omit=dev || true
+            fi
+            mkdir -p tmp
+            # Tell Passenger to reload the app on next request:
+            touch tmp/restart.txt
