@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Selection - Citiedge University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .portal-card {
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .portal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header with User Info -->
+    <header class="bg-white bg-opacity-10 backdrop-blur-md text-white py-4 px-6 shadow-lg">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <h1 class="text-2xl font-bold">Citiedge University</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm opacity-90">Welcome,</p>
+                    <p class="font-semibold" id="username">User</p>
+                </div>
+                <button onclick="logout()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="text-center mb-12 fade-in">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Select Your Portal</h2>
+            <p class="text-white text-lg opacity-90">Choose the portal you want to access</p>
+        </div>
+
+        <!-- Portal Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Student Portal -->
+            <div class="portal-card bg-white rounded-2xl shadow-xl p-8 cursor-pointer fade-in" style="animation-delay: 0.1s;" onclick="window.location.href='student-portal-new.html'">
+                <div class="text-6xl mb-4">🎓</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Student Portal</h3>
+                <p class="text-gray-600 mb-6">Access your courses, grades, and upload assignments</p>
+                <div class="flex items-center text-primary font-semibold">
+                    <span>Enter Portal</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Agent Portal -->
+            <div class="portal-card bg-white rounded-2xl shadow-xl p-8 cursor-pointer fade-in" style="animation-delay: 0.2s;" onclick="window.location.href='agent-portal.html'">
+                <div class="text-6xl mb-4">💼</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Agent Portal</h3>
+                <p class="text-gray-600 mb-6">Manage applications and student interactions</p>
+                <div class="flex items-center text-primary font-semibold">
+                    <span>Enter Portal</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Staff Portal -->
+            <div class="portal-card bg-white rounded-2xl shadow-xl p-8 cursor-pointer fade-in" style="animation-delay: 0.3s;" onclick="window.location.href='staff-portal.html'">
+                <div class="text-6xl mb-4">👔</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Staff Portal</h3>
+                <p class="text-gray-600 mb-6">Administrative tools and document management</p>
+                <div class="flex items-center text-primary font-semibold">
+                    <span>Enter Portal</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Alumni Portal -->
+            <div class="portal-card bg-white rounded-2xl shadow-xl p-8 cursor-pointer fade-in" style="animation-delay: 0.4s;" onclick="window.location.href='alumni-portal.html'">
+                <div class="text-6xl mb-4">🎖️</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Alumni Portal</h3>
+                <p class="text-gray-600 mb-6">Network access and engagement tools</p>
+                <div class="flex items-center text-primary font-semibold">
+                    <span>Enter Portal</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Admin Portal -->
+            <div class="portal-card bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-xl p-8 cursor-pointer fade-in text-white" style="animation-delay: 0.5s;" onclick="window.location.href='admin-portal.html'">
+                <div class="text-6xl mb-4">🔧</div>
+                <h3 class="text-2xl font-bold mb-3">Admin Portal</h3>
+                <p class="opacity-90 mb-6">Manage students, courses, and system settings</p>
+                <div class="flex items-center font-semibold">
+                    <span>Enter Portal</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-white py-6 opacity-75">
+        <p>&copy; 2024 Citiedge University. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Display username
+        const username = sessionStorage.getItem('username');
+        if (username) {
+            document.getElementById('username').textContent = username;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('loggedIn');
+            sessionStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
