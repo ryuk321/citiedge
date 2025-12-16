@@ -7,7 +7,25 @@ A comprehensive portal system for Citiedge University providing dedicated interf
 - **Alumni Portal**: Network access and engagement tools
 - **Admin Portal**: Manage students, courses, and system settings
 
+## 🆕 Latest Update: Interactive Login with Tailwind CSS
+
+**New Features:**
+- Modern, animated login page with Tailwind CSS
+- Password visibility toggle
+- Social login integration (Google, Microsoft)
+- Guest access option
+- Session-based authentication
+- Loading states and smooth transitions
+
 ## Features
+
+### Login & Authentication
+- 🔐 **Interactive Login Page**: Modern design with Tailwind CSS
+- 🎨 **Animated Background**: Floating elements with smooth animations
+- 👁️ **Password Toggle**: Show/hide password functionality
+- 🌐 **Social Login**: Google and Microsoft SSO ready
+- 👤 **Guest Access**: Quick access without credentials
+- 🔄 **Session Management**: Secure authentication flow
 
 ### Student Portal (UK University Style)
 - 📊 **Dashboard**: Overview of courses, grades, and upcoming deadlines
@@ -27,12 +45,15 @@ A comprehensive portal system for Citiedge University providing dedicated interf
 - **Component-Based**: Reusable UI components in `/components` folder
 - **API Layer**: Separated data access layer in `/api` folder (mock data for demo)
 - **Clean Separation**: GUI and business logic are separated for maintainability
+- **Tailwind CSS**: Modern utility-first CSS framework
 
 ## Project Structure
 
 ```
 citiedge/
-├── index.html                  # Main portal selection page
+├── login.html                  # NEW: Interactive login page
+├── portal-selection.html       # NEW: Portal selection with auth
+├── index.html                  # Redirects to login
 ├── student-portal-new.html     # Enhanced student portal
 ├── admin-portal.html           # Admin management portal
 ├── agent-portal.html           # Agent portal
@@ -55,13 +76,30 @@ citiedge/
 
 ## Getting Started
 
-1. Open `index.html` in a web browser to access the portal selection page
-2. Choose your portal (Student, Admin, Agent, Staff, or Alumni)
-3. Navigate through the features using the tabbed interface
+### Quick Start
+1. Open `index.html` in a web browser
+2. You'll be redirected to the login page
+3. Enter any credentials or click "Continue as Guest"
+4. Select your portal from the portal selection page
+5. Navigate through the features
+
+### Login Page Features
+- **Username/Email**: Enter any value (demo mode)
+- **Password**: Enter any value (demo mode)
+- **Remember Me**: Optional checkbox
+- **Social Login**: Google/Microsoft buttons (demo)
+- **Guest Access**: Skip login entirely
+
+### Direct Access
+- Login: `login.html`
+- Portal Selection: `portal-selection.html`
+- Student Portal: `student-portal-new.html`
+- Admin Portal: `admin-portal.html`
 
 ## Technical Details
 
 - **Pure JavaScript**: No build tools required
+- **Tailwind CSS**: Loaded via CDN
 - **Component-Based Architecture**: Reusable components for consistent UI
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 - **Accessibility**: WCAG compliant with keyboard navigation and screen reader support
@@ -73,12 +111,21 @@ The portal uses a component-based architecture:
 
 - **Components** (`components/components.js`): Reusable UI elements (cards, tables, modals, etc.)
 - **API Layer** (`api/api.js`): Data access methods (in production, these would be HTTP requests)
-- **Styles**: Modular CSS with component-specific styles
+- **Styles**: Tailwind CSS + modular CSS with component-specific styles
+
+## Documentation
+
+- `LOGIN_PAGE.md` - Login page features and design
+- `ARCHITECTURE.md` - Complete architecture guide
+- `FEATURES.md` - Feature documentation
+- `VISUAL_GUIDE.md` - Visual design reference
+- `README.md` - This file
 
 ## Future Enhancements
 
 - Backend integration with real database
-- Authentication and authorization
+- Real authentication and authorization
+- Two-factor authentication
 - Real-time notifications
 - Email integration
 - Advanced reporting
