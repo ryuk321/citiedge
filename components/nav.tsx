@@ -14,7 +14,7 @@ const Header: React.FC = () => {
   />  
 </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">CITI EDGE</h1>
+              <h1 className="text-2xl font-bold text-gray-900">CITIEDGE</h1>
               <p className="text-xs text-gray-500">Educational Portal</p>
             </div>
           </div>

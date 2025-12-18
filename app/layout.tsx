@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CITI EDGE - Educational Portal",
+  title: "CITIEDGE - Educational Portal",
   description: "Access your student, staff, or agent portal at CITI EDGE. Empowering education through technology and innovation.",
 };
 
