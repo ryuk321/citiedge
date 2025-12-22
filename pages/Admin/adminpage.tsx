@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useProtectedRoute, logout, getAuthUser } from '../../lib/auth';
 import '../../app/globals.css';
 
 // Import section components (will create these next)
@@ -9,6 +10,7 @@ import TuitionPage from './tuition/TuitionPage';
 import AttendancePage from './attendance/AttendancePage';
 import UsersPage from './users/UsersPage';
 import DashboardPage from './components/Dashboard';
+import AcademicCalendarPage from './calendar/AcademicCalendarPage';
 
 interface MenuItem {
     id: string;
@@ -17,8 +19,16 @@ interface MenuItem {
 }
 
 const AdminPage: React.FC = () => {
+    // Protect this page - only admin and super_admin can access
+    useProtectedRoute(['super_admin', 'admin', 'agent']);
+    
+    const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    useEffect(() => {
+        setCurrentUser(getAuthUser());
+    }, []);
 
     // Menu items configuration
     const menuItems: MenuItem[] = [
@@ -77,6 +87,15 @@ const AdminPage: React.FC = () => {
             ),
         },
         {
+            id: 'calendar',
+            name: 'Academic Calendar',
+            icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            ),
+        },
+        {
             id: 'users',
             name: 'Users',
             icon: (
@@ -95,13 +114,15 @@ const AdminPage: React.FC = () => {
             case 'students':
                 return <StudentsPage />;
             case 'staff':
-                return <StudentsPage />;
+                return <StaffPage />;
             case 'library':
-                return <StudentsPage />;
+                return <AcademicCalendarPage />;
             case 'tuition':
-                return <StudentsPage />;
+                return <AcademicCalendarPage />;
             case 'attendance':
-                return <StudentsPage />;
+                return <AcademicCalendarPage />;
+            case 'calendar':
+                return <AcademicCalendarPage />;
             case 'users':
                 return <UsersPage />;
             default:
@@ -196,11 +217,25 @@ const AdminPage: React.FC = () => {
                             {/* Profile */}
                             <div className="flex items-center gap-3">
                                 <div className="text-right">
-                                    <p className="text-sm font-medium text-gray-900">Admin User</p>
-                                    <p className="text-xs text-gray-500">Administrator</p>
+                                    <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
+                                    <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
                                 </div>
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold">
-                                    A
+                                <div className="relative group">
+                                    <button className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all">
+                                        {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
+                                    </button>
+                                    {/* Logout Dropdown */}
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                        <button
+                                            onClick={logout}
+                                            className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
+                                            Logout
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

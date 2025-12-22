@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { logout, getAuthUser } from '../../lib/auth';
 import {
   fetchStaffProfile,
   fetchLecturerClasses,
@@ -22,6 +23,7 @@ import {
 } from '../../lib/staffData';
 
 export default function StaffPortal() {
+  const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
   const [loading, setLoading] = useState(true);
   const [staff, setStaff] = useState<Staff | null>(null);
   const [lecturerClasses, setLecturerClasses] = useState<LecturerClass[]>([]);
@@ -34,6 +36,7 @@ export default function StaffPortal() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
+    setCurrentUser(getAuthUser());
     loadStaffData();
   }, []);
 
@@ -175,9 +178,29 @@ export default function StaffPortal() {
                   </span>
                 )}
               </button>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                Profile
-              </button>
+              {/* User Profile & Logout */}
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
+                  <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
+                </div>
+                <div className="relative group">
+                  <button className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all">
+                    {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                    <button
+                      onClick={logout}
+                      className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

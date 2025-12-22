@@ -9,13 +9,14 @@ const Footer: React.FC = () => {
           {/* Logo + Intro */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                <img
-                  src="citiedge-logo.jpg"
-                  alt="CITI EDGE Logo"
-                  className="w-10 h-10 object-contain"
-                />
-              </div>
+              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+  <img
+    src="citiedge-logo.jpg"
+    alt="CITI EDGE Logo"
+    className="w-full h-full object-cover"
+  />
+</div>
+
               <span className="font-bold text-xl">CITI EDGE</span>
             </div>
             <p className="text-gray-400 text-sm">

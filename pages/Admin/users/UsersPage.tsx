@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { usersAPI } from '../../../lib/api';
+import Notification, { NotificationProps } from '../../../components/Notification';
+import { useProtectedRoute, logout, getAuthUser } from '../../../lib/auth';
+import bcrypt from 'bcryptjs';
 
 interface User {
     id: string;
@@ -11,12 +14,17 @@ interface User {
 }
 
 const UsersPage: React.FC = () => {
+    // Protect this page - only super_admin and admin can access
+    useProtectedRoute(['super_admin', 'admin']);
+    
+    const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [notification, setNotification] = useState<NotificationProps | null>(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -45,11 +53,32 @@ const UsersPage: React.FC = () => {
     // Add new user
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault();
-        const result = await usersAPI.create(formData);
+        
+        // Hash the password before sending to server
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(formData.password, salt);
+        
+        const dataToSend = {
+            ...formData,
+            password: hashedPassword
+        };
+        
+        const result = await usersAPI.create(dataToSend);
         if (result.success) {
+            setNotification({
+                type: 'success',
+                message: 'User created successfully!',
+                duration: 4000
+            });
             loadUsers();
             setShowAddForm(false);
             setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active' });
+        } else {
+            setNotification({
+                type: 'error',
+                message: result.error || 'Failed to create user. Please try again.',
+                duration: 4000
+            });
         }
     };
 
@@ -72,25 +101,53 @@ const UsersPage: React.FC = () => {
         if (!selectedUser) return;
 
         const updateData: any = { ...formData };
-        // Don't send password if it's empty
+        // Don't send password if it's empty, otherwise hash it
         if (!updateData.password) {
             delete updateData.password;
+        } else {
+            // Hash the password before sending to server
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(updateData.password, salt);
         }
 
         const result = await usersAPI.update(selectedUser.id, updateData);
         if (result.success) {
+            setNotification({
+                type: 'success',
+                message: 'User updated successfully!',
+                duration: 4000
+            });
             loadUsers();
             setShowEditModal(false);
             setSelectedUser(null);
             setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active' });
+        } else {
+            setNotification({
+                type: 'error',
+                message: result.error || 'Failed to update user. Please try again.',
+                duration: 4000
+            });
         }
     };
 
     // Delete user
     const handleDelete = async (id: string) => {
         if (confirm('Are you sure you want to delete this user?')) {
-            await usersAPI.delete(id);
-            loadUsers();
+            const result = await usersAPI.delete(id);
+            if (result.success) {
+                setNotification({
+                    type: 'success',
+                    message: 'User deleted successfully!',
+                    duration: 4000
+                });
+                loadUsers();
+            } else {
+                setNotification({
+                    type: 'error',
+                    message: result.error || 'Failed to delete user. Please try again.',
+                    duration: 4000
+                });
+            }
         }
     };
 
@@ -111,6 +168,16 @@ const UsersPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            {/* Notification Display */}
+            {notification && (
+                <Notification
+                    type={notification.type}
+                    message={notification.message}
+                    duration={notification.duration}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
             {/* Header Actions */}
             <div className="flex items-center justify-between">
                 <div className="flex-1 max-w-md">
@@ -122,15 +189,40 @@ const UsersPage: React.FC = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-black"
                     />
                 </div>
-                <button
-                    onClick={() => setShowAddForm(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add User
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowAddForm(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add User
+                    </button>
+                    {/* User Profile & Logout */}
+                    <div className="flex items-center gap-3">
+                        <div className="text-right">
+                            <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
+                            <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
+                        </div>
+                        <div className="relative group">
+                            <button className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all">
+                                {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
+                            </button>
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                <button
+                                    onClick={logout}
+                                    className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Add User Form */}
@@ -144,7 +236,7 @@ const UsersPage: React.FC = () => {
                                 placeholder="Username"
                                 value={formData.username}
                                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                                 required
                             />
                             <input
@@ -152,7 +244,7 @@ const UsersPage: React.FC = () => {
                                 placeholder="Email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                                 required
                             />
                             <input
@@ -160,23 +252,25 @@ const UsersPage: React.FC = () => {
                                 placeholder="Password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                                 required
                             />
                             <select
                                 value={formData.role}
                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                             >
+                                <option value="super_admin">Super Admin</option>
                                 <option value="admin">Admin</option>
                                 <option value="staff">Staff</option>
+                                <option value="lecturer">Lecturer</option>
                                 <option value="student">Student</option>
                                 <option value="agent">Agent</option>
                             </select>
                             <select
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                             >
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
@@ -186,14 +280,14 @@ const UsersPage: React.FC = () => {
                         <div className="flex gap-3">
                             <button
                                 type="submit"
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-black"
                             >
                                 Save User
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowAddForm(false)}
-                                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-black"
                             >
                                 Cancel
                             </button>
@@ -234,15 +328,19 @@ const UsersPage: React.FC = () => {
                                     <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            user.role === 'admin'
+                                            user.role === 'super_admin'
+                                                ? 'bg-red-100 text-red-800'
+                                                : user.role === 'admin'
                                                 ? 'bg-purple-100 text-purple-800'
                                                 : user.role === 'staff'
                                                 ? 'bg-blue-100 text-blue-800'
+                                                : user.role === 'lecturer'
+                                                ? 'bg-indigo-100 text-indigo-800'
                                                 : user.role === 'student'
                                                 ? 'bg-green-100 text-green-800'
                                                 : 'bg-orange-100 text-orange-800'
                                         }`}>
-                                            {user.role}
+                                            {user.role === 'super_admin' ? 'Super Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -334,8 +432,10 @@ const UsersPage: React.FC = () => {
                                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                         className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600"
                                     >
+                                        <option value="super_admin">Super Admin</option>
                                         <option value="admin">Admin</option>
                                         <option value="staff">Staff</option>
+                                        <option value="lecturer">Lecturer</option>
                                         <option value="student">Student</option>
                                         <option value="agent">Agent</option>
                                     </select>

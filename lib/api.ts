@@ -41,9 +41,7 @@ export async function sendData(action: string, data: any) {
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
-        
         const result = await response.json();
-        alert(JSON.stringify(result));
         return { success: true, data: result };
         
     } catch (error) {

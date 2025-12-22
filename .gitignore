@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+student_api.php
+create_academic_calendar_table.sql
+
+ServerSide Codes SFTP
