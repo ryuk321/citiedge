@@ -41,5 +41,7 @@ yarn-error.log*
 next-env.d.ts
 student_api.php
 create_academic_calendar_table.sql
-
+ACADEMIC_CALENDAR_SETUP.md
+QUICK_SETUP.sql
+SETUP_DATABASE.sql
 ServerSide Codes SFTP

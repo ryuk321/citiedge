@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
   <img
-    src="citiedge-logo.jpg"
+    src="citiedge-logo.png"
     alt="CITI EDGE Logo"
     className="w-full h-full object-cover"
   />
