@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useProtectedRoute } from "../../lib/auth";
+import { useProtectedRoute } from "../lib/auth";
 import Header from "@/components/nav";
 import Footer from "@/components/footer";
 
