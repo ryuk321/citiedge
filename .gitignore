@@ -45,3 +45,4 @@ ACADEMIC_CALENDAR_SETUP.md
 QUICK_SETUP.sql
 SETUP_DATABASE.sql
 ServerSide Codes SFTP
+create_student_finance_table.sql

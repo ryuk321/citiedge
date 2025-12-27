@@ -120,3 +120,29 @@ export const usersAPI = {
     update: (id: string, user: any) => sendData('updateUser', { id, ...user }),
     delete: (id: string) => sendData('deleteUser', { id }),
 };
+
+export const studentFinanceAPI = {
+    // Qualifications
+    getQualifications: (activeOnly = false) => 
+        fetchData(`getStudentFinanceQualifications${activeOnly ? '&active=true' : ''}`),
+    getQualificationById: (id: string) => 
+        fetchData(`getFinanceQualification&id=${id}`),
+    addQualification: (data: any) => 
+        sendData('addFinanceQualification', data),
+    updateQualification: (id: string, data: any) => 
+        sendData('updateFinanceQualification', { id, ...data }),
+    deleteQualification: (id: string) => 
+        sendData('deleteFinanceQualification', { id }),
+    
+    // General Information
+    getGeneralInfo: (activeOnly = false) => 
+        fetchData(`getStudentFinanceGeneral${activeOnly ? '&active=true' : ''}`),
+    getGeneralInfoById: (id: string) => 
+        fetchData(`getFinanceGeneralInfo&id=${id}`),
+    addGeneralInfo: (data: any) => 
+        sendData('addFinanceGeneralInfo', data),
+    updateGeneralInfo: (id: string, data: any) => 
+        sendData('updateFinanceGeneralInfo', { id, ...data }),
+    deleteGeneralInfo: (id: string) => 
+        sendData('deleteFinanceGeneralInfo', { id }),
+};
