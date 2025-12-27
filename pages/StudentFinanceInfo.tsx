@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useProtectedRoute } from "../lib/auth";
+// import { useProtectedRoute } from "../lib/auth";
 import Header from "@/components/nav";
 import Footer from "@/components/footer";
 
@@ -39,7 +39,7 @@ interface GeneralInfoData {
 }
 
 const StudentFinanceInfoPage: React.FC = () => {
-  useProtectedRoute(['student', 'staff', 'admin', 'super_admin']);
+  // useProtectedRoute(['student', 'staff', 'admin', 'super_admin']);
 
   const [qualifications, setQualifications] = useState<QualificationData[]>([]);
   const [generalInfo, setGeneralInfo] = useState<GeneralInfoData[]>([]);
