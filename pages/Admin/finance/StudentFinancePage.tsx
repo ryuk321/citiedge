@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Notification, { NotificationProps } from '../../../components/Notification';
 
 // API Configuration
 const API_BASE_URL = 'https://citiedgecollege.co.uk/student_api.php';
@@ -46,6 +47,7 @@ const StudentFinancePage: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<QualificationData | GeneralInfoData | null>(null);
+   const [notification, setNotification] = useState<NotificationProps | null>(null);
 
   // Form data for qualifications
   const [qualFormData, setQualFormData] = useState<Partial<QualificationData>>({
@@ -85,9 +87,9 @@ const StudentFinancePage: React.FC = () => {
   const loadQualifications = async () => {
     setLoading(true);
     try {
-      console.log("API_BASE_URL:", API_BASE_URL);
-      console.log("API_KEY:", API_KEY);
-      console.log("Full URL:", `${API_BASE_URL}?action=getStudentFinanceQualifications`);
+    //   console.log("API_BASE_URL:", API_BASE_URL);
+    //   console.log("API_KEY:", API_KEY);
+    //   console.log("Full URL:", `${API_BASE_URL}?action=getStudentFinanceQualifications`);
       
       const response = await fetch(
         `${API_BASE_URL}?action=getStudentFinanceQualifications`,
@@ -98,18 +100,27 @@ const StudentFinancePage: React.FC = () => {
         }
       );
 
-      console.log("Response status:", response.status);
+    //   console.log("Response status:", response.status);
       const result = await response.json();
-      console.log("Result:", result);
+    //   console.log("Result:", result);
       
       if (result.success) {
         setQualifications(result.data);
       } else {
-        alert("Failed to load qualifications: " + (result.error || "Unknown error"));
+       
+        setNotification({
+          type: 'error',
+          message: 'Failed to load qualifications: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Failed to load qualifications:", error);
-      alert("Network error: Unable to connect to the server.");
+      setNotification({
+        type: 'error',
+        message: 'Network error: Unable to connect to the server.',
+        duration: 4000
+      });
     }
     setLoading(false);
   };
@@ -131,11 +142,19 @@ const StudentFinancePage: React.FC = () => {
       if (result.success) {
         setGeneralInfo(result.data);
       } else {
-        alert("Failed to load general info: " + (result.error || "Unknown error"));
+        setNotification({
+          type: 'error',
+          message: 'Failed to load general info: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Failed to load general info:", error);
-      alert("Network error: Unable to connect to the server.");
+      setNotification({
+        type: 'error',
+        message: 'Network error: Unable to connect to the server.',
+        duration: 4000
+      });
     }
     setLoading(false);
   };
@@ -163,16 +182,28 @@ const StudentFinancePage: React.FC = () => {
 
       const result = await response.json();
       if (result.success) {
-        alert("Qualification added successfully!");
+        setNotification({
+          type: 'success',
+          message: 'Qualification added successfully!',
+          duration: 4000
+        });
         setShowAddForm(false);
         loadQualifications();
         resetQualForm();
       } else {
-        alert("Failed to add qualification: " + (result.error || "Unknown error"));
+        setNotification({
+          type: 'error',
+          message: 'Failed to add qualification: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Error adding qualification:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while adding qualification.',
+        duration: 4000
+      });
     }
   };
 
@@ -191,16 +222,30 @@ const StudentFinancePage: React.FC = () => {
 
       const result = await response.json();
       if (result.success) {
-        alert("General information added successfully!");
+          setNotification({
+                type: 'success',
+                message: 'General information added successfully!',
+                duration: 4000
+            });
+   
         setShowAddForm(false);
         loadGeneralInfo();
         resetGenInfoForm();
       } else {
-        alert("Failed to add general info: " + (result.error || "Unknown error"));
+   
+        setNotification({
+          type: 'error',
+          message: 'Failed to add general info: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Error adding general info:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while adding general information.',
+        duration: 4000
+      });
     }
   };
 
@@ -226,11 +271,19 @@ const StudentFinancePage: React.FC = () => {
         loadQualifications();
         setSelectedItem(null);
       } else {
-        alert("Failed to update: " + (result.error || "Unknown error"));
+        setNotification({
+          type: 'error',
+          message: 'Failed to update: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Error updating:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while updating qualification.',
+        duration: 4000
+      })
     }
   };
 
@@ -251,16 +304,29 @@ const StudentFinancePage: React.FC = () => {
 
       const result = await response.json();
       if (result.success) {
-        alert("General information updated successfully!");
+        // alert("General information updated successfully!");
+            setNotification({
+                type: 'success',
+                message: 'General information updated successfully!',
+                duration: 4000
+            });
         setShowEditModal(false);
         loadGeneralInfo();
         setSelectedItem(null);
       } else {
-        alert("Failed to update: " + (result.error || "Unknown error"));
+        setNotification({
+                type: 'error',
+                message: 'Failed to update general information: ' + (result.error || "Unknown error"),
+                duration: 4000
+            });
       }
     } catch (error) {
       console.error("Error updating:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while updating general information.',
+        duration: 4000
+      });
     }
   };
 
@@ -280,14 +346,26 @@ const StudentFinancePage: React.FC = () => {
 
       const result = await response.json();
       if (result.success) {
-        alert("Deleted successfully!");
+        setNotification({
+          type: 'success',
+          message: 'Deleted successfully!',
+          duration: 4000
+        });
         loadQualifications();
       } else {
-        alert("Failed to delete: " + (result.error || "Unknown error"));
+        setNotification({
+            type: 'error',
+            message: 'Failed to delete: ' + (result.error || "Unknown error"),
+            duration: 4000
+        });
       }
     } catch (error) {
       console.error("Error deleting:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while deleting qualification.',
+        duration: 4000
+      });
     }
   };
 
@@ -307,14 +385,26 @@ const StudentFinancePage: React.FC = () => {
 
       const result = await response.json();
       if (result.success) {
-        alert("Deleted successfully!");
+        setNotification({
+          type: 'success',
+          message: 'Deleted successfully!',
+          duration: 4000
+        });
         loadGeneralInfo();
       } else {
-        alert("Failed to delete: " + (result.error || "Unknown error"));
+        setNotification({
+          type: 'error',
+          message: 'Failed to delete: ' + (result.error || "Unknown error"),
+          duration: 4000
+        });
       }
     } catch (error) {
       console.error("Error deleting:", error);
-      alert("Network error");
+      setNotification({
+        type: 'error',
+        message: 'Network error while deleting general information.',
+        duration: 4000
+      });
     }
   };
 
@@ -370,6 +460,14 @@ const StudentFinancePage: React.FC = () => {
 
   return (
     <div className="p-6">
+         {notification && (
+                <Notification
+                    type={notification.type}
+                    message={notification.message}
+                    duration={notification.duration}
+                    onClose={() => setNotification(null)}
+                />
+            )}
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -587,7 +685,7 @@ const StudentFinancePage: React.FC = () => {
 
       {/* Add Form Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+       <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">
@@ -607,7 +705,7 @@ const StudentFinancePage: React.FC = () => {
               {activeTab === 'qualifications' ? (
                 <form onSubmit={handleAddQualification} className="space-y-6">
                   {/* Basic Information */}
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-4 ">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Subject Name *
@@ -617,7 +715,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={qualFormData.subject_name}
                         onChange={(e) => setQualFormData({ ...qualFormData, subject_name: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                     <div>
@@ -629,7 +727,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={qualFormData.subject_slug}
                         onChange={(e) => setQualFormData({ ...qualFormData, subject_slug: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         placeholder="e.g., law, business-economics"
                       />
                     </div>
@@ -644,7 +742,7 @@ const StudentFinancePage: React.FC = () => {
                         type="text"
                         value={qualFormData.category}
                         onChange={(e) => setQualFormData({ ...qualFormData, category: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                     <div>
@@ -655,7 +753,7 @@ const StudentFinancePage: React.FC = () => {
                         type="number"
                         value={qualFormData.display_order}
                         onChange={(e) => setQualFormData({ ...qualFormData, display_order: parseInt(e.target.value) })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                   </div>
@@ -672,7 +770,7 @@ const StudentFinancePage: React.FC = () => {
                           type="text"
                           value={qualFormData.level_6_title}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_6_title: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         />
                       </div>
                       <div>
@@ -683,7 +781,7 @@ const StudentFinancePage: React.FC = () => {
                           value={qualFormData.level_6_qualification}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_6_qualification: e.target.value })}
                           rows={2}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         />
                       </div>
                       <div className="flex items-center">
@@ -691,7 +789,7 @@ const StudentFinancePage: React.FC = () => {
                           type="checkbox"
                           checked={qualFormData.level_6_finance_eligible}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_6_finance_eligible: e.target.checked })}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 text-black"
                         />
                         <label className="ml-2 text-sm text-gray-700">
                           Student Finance Eligible
@@ -712,7 +810,7 @@ const StudentFinancePage: React.FC = () => {
                           type="text"
                           value={qualFormData.level_7_title}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_7_title: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         />
                       </div>
                       <div>
@@ -723,7 +821,7 @@ const StudentFinancePage: React.FC = () => {
                           value={qualFormData.level_7_qualification}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_7_qualification: e.target.value })}
                           rows={2}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         />
                       </div>
                       <div className="flex items-center">
@@ -731,7 +829,7 @@ const StudentFinancePage: React.FC = () => {
                           type="checkbox"
                           checked={qualFormData.level_7_finance_eligible}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_7_finance_eligible: e.target.checked })}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 text-black"
                         />
                         <label className="ml-2 text-sm text-gray-700">
                           Student Finance Eligible
@@ -752,7 +850,7 @@ const StudentFinancePage: React.FC = () => {
                           type="text"
                           value={qualFormData.level_8_title}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_8_title: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         />
                       </div>
                       <div>
@@ -763,7 +861,7 @@ const StudentFinancePage: React.FC = () => {
                           value={qualFormData.level_8_qualification}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_8_qualification: e.target.value })}
                           rows={2}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black text-black"
                         />
                       </div>
                       <div className="flex items-center">
@@ -771,7 +869,7 @@ const StudentFinancePage: React.FC = () => {
                           type="checkbox"
                           checked={qualFormData.level_8_finance_eligible}
                           onChange={(e) => setQualFormData({ ...qualFormData, level_8_finance_eligible: e.target.checked })}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 text-black"
                         />
                         <label className="ml-2 text-sm text-gray-700">
                           Student Finance Eligible
@@ -789,7 +887,7 @@ const StudentFinancePage: React.FC = () => {
                       value={qualFormData.professional_route}
                       onChange={(e) => setQualFormData({ ...qualFormData, professional_route: e.target.value })}
                       rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       placeholder="e.g., LLB → SQE → Solicitor / Barrister"
                     />
                   </div>
@@ -801,7 +899,7 @@ const StudentFinancePage: React.FC = () => {
                         type="checkbox"
                         checked={qualFormData.is_regulated}
                         onChange={(e) => setQualFormData({ ...qualFormData, is_regulated: e.target.checked })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 text-black"
                       />
                       <label className="ml-2 text-sm text-gray-700">
                         Is Regulated Field
@@ -816,7 +914,7 @@ const StudentFinancePage: React.FC = () => {
                           type="text"
                           value={qualFormData.regulatory_body}
                           onChange={(e) => setQualFormData({ ...qualFormData, regulatory_body: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           placeholder="e.g., NMC, SQE, HCPC"
                         />
                       </div>
@@ -832,7 +930,7 @@ const StudentFinancePage: React.FC = () => {
                       value={qualFormData.special_notes}
                       onChange={(e) => setQualFormData({ ...qualFormData, special_notes: e.target.value })}
                       rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       placeholder="Any important notes or warnings for students"
                     />
                   </div>
@@ -842,7 +940,7 @@ const StudentFinancePage: React.FC = () => {
                       type="checkbox"
                       checked={qualFormData.is_active}
                       onChange={(e) => setQualFormData({ ...qualFormData, is_active: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 text-black"
                     />
                     <label className="ml-2 text-sm text-gray-700">
                       Active (Display on student page)
@@ -877,7 +975,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={genInfoFormData.section_title}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, section_title: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black text-black"
                       />
                     </div>
                     <div>
@@ -889,7 +987,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={genInfoFormData.section_slug}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, section_slug: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         placeholder="e.g., funding-rules"
                       />
                     </div>
@@ -904,7 +1002,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={genInfoFormData.section_type}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, section_type: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       >
                         <option value="funding_rules">Funding Rules</option>
                         <option value="progression_chart">Progression Chart</option>
@@ -920,7 +1018,7 @@ const StudentFinancePage: React.FC = () => {
                         type="number"
                         value={genInfoFormData.display_order}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, display_order: parseInt(e.target.value) })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                   </div>
@@ -934,7 +1032,7 @@ const StudentFinancePage: React.FC = () => {
                       value={genInfoFormData.content}
                       onChange={(e) => setGenInfoFormData({ ...genInfoFormData, content: e.target.value })}
                       rows={8}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm text-black"
                       placeholder="Enter content (supports line breaks and simple formatting)"
                     />
                   </div>
@@ -948,7 +1046,7 @@ const StudentFinancePage: React.FC = () => {
                         type="text"
                         value={genInfoFormData.icon}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, icon: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         placeholder="e.g., info, warning, chart"
                       />
                     </div>
@@ -960,7 +1058,7 @@ const StudentFinancePage: React.FC = () => {
                         type="color"
                         value={genInfoFormData.color_code}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, color_code: e.target.value })}
-                        className="w-full h-10 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-10 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                   </div>
@@ -970,7 +1068,7 @@ const StudentFinancePage: React.FC = () => {
                       type="checkbox"
                       checked={genInfoFormData.is_active}
                       onChange={(e) => setGenInfoFormData({ ...genInfoFormData, is_active: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500  text-black"
                     />
                     <label className="ml-2 text-sm text-gray-700">
                       Active (Display on student page)
@@ -1001,7 +1099,7 @@ const StudentFinancePage: React.FC = () => {
 
       {/* Edit Modal - Similar structure as Add Form */}
       {showEditModal && selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+       <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">
@@ -1035,7 +1133,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={qualFormData.subject_name}
                         onChange={(e) => setQualFormData({ ...qualFormData, subject_name: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                     <div>
@@ -1047,7 +1145,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={qualFormData.subject_slug}
                         onChange={(e) => setQualFormData({ ...qualFormData, subject_slug: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                   </div>
@@ -1086,7 +1184,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={genInfoFormData.section_title}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, section_title: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                       />
                     </div>
                     <div>
@@ -1097,7 +1195,7 @@ const StudentFinancePage: React.FC = () => {
                         required
                         value={genInfoFormData.section_type}
                         onChange={(e) => setGenInfoFormData({ ...genInfoFormData, section_type: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent  text-black"
                       >
                         <option value="funding_rules">Funding Rules</option>
                         <option value="progression_chart">Progression Chart</option>
@@ -1116,7 +1214,7 @@ const StudentFinancePage: React.FC = () => {
                       value={genInfoFormData.content}
                       onChange={(e) => setGenInfoFormData({ ...genInfoFormData, content: e.target.value })}
                       rows={8}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm text-black"
                     />
                   </div>
 

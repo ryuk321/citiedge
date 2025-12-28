@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
   />
 </div>
 
-              <span className="font-bold text-xl">CITI EDGE</span>
+              <span className="font-bold text-xl">CITIEDGE</span>
             </div>
             <p className="text-gray-400 text-sm">
               Empowering education through technology and innovation.
@@ -50,8 +50,8 @@ const Footer: React.FC = () => {
           <div>
             <h5 className="font-bold mb-4">Contact</h5>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>Email: info@citiedge.edu</li>
-              <li>Phone: +1 (555) 123-4567</li>
+              <li>Email: enquiry@citiedgecollege.co.uk </li>
+              <li>Phone/WhatsApp: +44 (0)7454 289604</li>
               <li>
                 Campus Address: 2-16 Bayford Street, E8 3SE <br />
                 <span className="italic">(Proposed for March 2026 Academic Session)</span>

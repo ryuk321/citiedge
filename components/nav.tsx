@@ -20,9 +20,9 @@ const Header: React.FC = () => {
             </div>
           </div>
           <nav className="hidden md:flex space-x-6">
-            <a href="#about" className="text-gray-600 hover:text-blue-600 transition">About</a>
-            <a href="#services" className="text-gray-600 hover:text-blue-600 transition">Services</a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition">Contact</a>
+              <a href="https://citiedgecollege.co.uk/" className="text-gray-600 hover:text-blue-600 transition">Home</a>
+            <a href="https://citiedgecollege.co.uk/about" className="text-gray-600 hover:text-blue-600 transition">About</a>   
+            <a href="https://citiedgecollege.co.uk/contact" className="text-gray-600 hover:text-blue-600 transition">Contact</a>
           </nav>
         </div>
       </header>
