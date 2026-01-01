@@ -11,12 +11,18 @@ import AttendancePage from './attendance/AttendancePage';
 import UsersPage from './users/UsersPage';
 import DashboardPage from './components/Dashboard';
 import AcademicCalendarPage from './calendar/AcademicCalendarPage';
-import StudentFinancePage from './finance/StudentFinancePage';
+    import StudentFinancePage from './finance/StudentFinancePage';
+
+interface SubMenuItem {
+    id: string;
+    name: string;
+}
 
 interface MenuItem {
     id: string;
     name: string;
     icon: React.ReactElement;
+    subItems?: SubMenuItem[];
 }
 
 const AdminPage: React.FC = () => {
@@ -25,100 +31,175 @@ const AdminPage: React.FC = () => {
     
     const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
     const [activeMenu, setActiveMenu] = useState('dashboard');
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [activeSubMenu, setActiveSubMenu] = useState('');
+    const [expandedMenus, setExpandedMenus] = useState<string[]>(['dashboard']);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         setCurrentUser(getAuthUser());
     }, []);
 
-    // Menu items configuration
+    // Menu items configuration with sub-items
     const menuItems: MenuItem[] = [
         {
             id: 'dashboard',
             name: 'Dashboard',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
             ),
+            subItems: [
+                { id: 'overview', name: 'Overview' },
+                { id: 'analytics', name: 'Analytics' },
+                { id: 'reports', name: 'Reports' },
+            ],
         },
         {
             id: 'students',
             name: 'Students',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'all-students', name: 'All Students' },
+                { id: 'add-student', name: 'Add Student' },
+                { id: 'student-records', name: 'Student Records' },
+                { id: 'enrollment', name: 'Enrollment' },
+            ],
         },
         {
             id: 'staff',
             name: 'Staff',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'all-staff', name: 'All Staff' },
+                { id: 'add-staff', name: 'Add Staff' },
+                { id: 'staff-schedule', name: 'Schedule' },
+                { id: 'departments', name: 'Departments' },
+            ],
         },
         {
             id: 'library',
             name: 'E-Learning Library',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             ),
+            subItems: [
+                { id: 'all-resources', name: 'All Resources' },
+                { id: 'add-resource', name: 'Add Resource' },
+                { id: 'categories', name: 'Categories' },
+                { id: 'borrowed-items', name: 'Borrowed Items' },
+            ],
         },
         {
             id: 'tuition',
             name: 'Tuition',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'fee-structure', name: 'Fee Structure' },
+                { id: 'payments', name: 'Payments' },
+                { id: 'invoices', name: 'Invoices' },
+                { id: 'scholarships', name: 'Scholarships' },
+            ],
         },
         {
             id: 'attendance',
             name: 'Attendance',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
             ),
+            subItems: [
+                { id: 'mark-attendance', name: 'Mark Attendance' },
+                { id: 'attendance-reports', name: 'Reports' },
+                { id: 'attendance-settings', name: 'Settings' },
+            ],
         },
         {
             id: 'calendar',
             name: 'Academic Calendar',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'view-calendar', name: 'View Calendar' },
+                { id: 'add-event', name: 'Add Event' },
+                { id: 'exam-schedule', name: 'Exam Schedule' },
+                { id: 'holidays', name: 'Holidays' },
+            ],
         },
         {
             id: 'finance',
             name: 'Student Finance',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'transactions', name: 'Transactions' },
+                { id: 'payment-history', name: 'Payment History' },
+                { id: 'financial-aid', name: 'Financial Aid' },
+                { id: 'billing', name: 'Billing' },
+            ],
         },
         {
             id: 'users',
             name: 'Users',
             icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
             ),
+            subItems: [
+                { id: 'all-users', name: 'All Users' },
+                { id: 'add-user', name: 'Add User' },
+                { id: 'roles', name: 'Roles & Permissions' },
+                { id: 'activity-log', name: 'Activity Log' },
+            ],
         },
     ];
 
+    const toggleMenu = (menuId: string) => {
+        setExpandedMenus(prev =>
+            prev.includes(menuId) ? prev.filter(id => id !== menuId) : [...prev, menuId]
+        );
+    };
+
+    const handleMenuClick = (menuId: string, subMenuId?: string) => {
+        setActiveMenu(menuId);
+        if (subMenuId) {
+            setActiveSubMenu(subMenuId);
+        } else {
+            setActiveSubMenu('');
+        }
+        // Ensure the menu is expanded when clicking
+        if (!expandedMenus.includes(menuId)) {
+            setExpandedMenus(prev => [...prev, menuId]);
+        }
+    };
+
     // Render active page content
     const renderContent = () => {
-        switch (activeMenu) {
+        const pageKey = activeSubMenu || activeMenu;
+
+        switch (pageKey) {
             case 'dashboard':
                 return <DashboardPage />;
             case 'students':
@@ -126,17 +207,19 @@ const AdminPage: React.FC = () => {
             case 'staff':
                 return <StaffPage />;
             case 'library':
-                return <AcademicCalendarPage />;
+                return <LibraryPage />;
             case 'tuition':
-                return <AcademicCalendarPage />;
+                return <TuitionPage />;
             case 'attendance':
-                return <AcademicCalendarPage />;
+                return <AttendancePage />;
             case 'calendar':
                 return <AcademicCalendarPage />;
             case 'finance':
                 return <StudentFinancePage />;
             case 'users':
                 return <UsersPage />;
+            case 'analytics':
+                return <DashboardPage />;
             default:
                 return <DashboardPage />;
         }
@@ -144,119 +227,153 @@ const AdminPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            {/* Sidebar */}
-            <aside
-                className={`${
-                    sidebarOpen ? 'w-64' : 'w-20'
-                } bg-gradient-to-b from-gray-900 to-gray-800 text-white transition-all duration-300 flex flex-col shadow-xl`}
-            >
+            {/* Sidebar - Stripe-style */}
+            <aside className="w-72 bg-gray-900 text-gray-300 flex flex-col h-screen sticky top-0 border-r border-gray-800">
                 {/* Header */}
-                <div className="p-6 border-b border-gray-700">
-                    <div className="flex items-center justify-between">
-                        {sidebarOpen && (
-                            <div>
-                                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                                    CITIEDGE
-                                </h1>
-                                <p className="text-xs text-gray-400 mt-1">Admin Panel</p>
+                <div className="p-6 border-b border-gray-800">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">C</span>
                             </div>
-                        )}
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-                            </svg>
-                        </button>
+                            <div>
+                                <h1 className="text-white font-bold text-lg">CITIEDGE</h1>
+                                <p className="text-xs text-gray-500">Admin Portal</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Search */}
+                    <div className="relative">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Find anything"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                     </div>
                 </div>
 
                 {/* Navigation Menu */}
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <nav className="flex-1 overflow-y-auto p-4 space-y-1">
                     {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveMenu(item.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                                activeMenu === item.id
-                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-600/30'
-                                    : 'hover:bg-gray-700/50'
-                            }`}
-                        >
-                            <span className={activeMenu === item.id ? 'text-white' : 'text-gray-400'}>
-                                {item.icon}
-                            </span>
-                            {sidebarOpen && (
-                                <span className="font-medium text-sm">{item.name}</span>
+                        <div key={item.id}>
+                            <button
+                                onClick={() => {
+                                    toggleMenu(item.id);
+                                    handleMenuClick(item.id);
+                                }}
+                                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                                    activeMenu === item.id && !activeSubMenu
+                                        ? 'bg-gray-800 text-white'
+                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    {item.icon}
+                                    <span className="font-medium">{item.name}</span>
+                                </div>
+                                {item.subItems && (
+                                    <svg
+                                        className={`w-4 h-4 transition-transform ${
+                                            expandedMenus.includes(item.id) ? 'rotate-90' : ''
+                                        }`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                )}
+                            </button>
+                            
+                            {/* Sub-menu items */}
+                            {item.subItems && expandedMenus.includes(item.id) && (
+                                <div className="ml-4 mt-1 space-y-1 border-l border-gray-800 pl-3">
+                                    {item.subItems.map((subItem) => (
+                                        <button
+                                            key={subItem.id}
+                                            onClick={() => handleMenuClick(item.id, subItem.id)}
+                                            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                                                activeSubMenu === subItem.id
+                                                    ? 'bg-gray-800 text-blue-400 font-medium'
+                                                    : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
+                                            }`}
+                                        >
+                                            {subItem.name}
+                                        </button>
+                                    ))}
+                                </div>
                             )}
-                        </button>
+                        </div>
                     ))}
                 </nav>
 
-                {/* Footer */}
-                <div className="p-4 border-t border-gray-700">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-colors text-gray-400">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {/* User Profile & Logout */}
+                <div className="p-4 border-t border-gray-800">
+                    <div className="flex items-center gap-3 mb-3 px-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                            {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">
+                                {currentUser?.username || currentUser?.email}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize truncate">
+                                {currentUser?.role?.replace('_', ' ')}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={logout}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        {sidebarOpen && <span className="text-sm">Logout</span>}
+                        <span>Logout</span>
                     </button>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-y-auto">
-                {/* Top Bar */}
-                <header className="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-10 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                {menuItems.find((item) => item.id === activeMenu)?.name}
-                            </h2>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Manage and monitor your {activeMenu} data
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {/* Notifications */}
-                            <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                            </button>
-                            {/* Profile */}
-                            <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                    <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
-                                    <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
-                                </div>
-                                <div className="relative group">
-                                    <button className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all">
-                                        {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
-                                    </button>
-                                    {/* Logout Dropdown */}
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                                        <button
-                                            onClick={logout}
-                                            className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                            </svg>
-                                            Logout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            {/* Main Content Area */}
+            <main className="flex-1 flex flex-col h-screen overflow-hidden">
+                {/* Top Header Bar */}
+                <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            {activeSubMenu 
+                                ? menuItems.find(m => m.id === activeMenu)?.subItems?.find(s => s.id === activeSubMenu)?.name
+                                : menuItems.find(m => m.id === activeMenu)?.name
+                            }
+                        </h2>
+                        <p className="text-sm text-gray-500 mt-1">
+                            {activeSubMenu ? `${menuItems.find(m => m.id === activeMenu)?.name} / ${menuItems.find(m => m.id === activeMenu)?.subItems?.find(s => s.id === activeSubMenu)?.name}` : `Manage ${activeMenu}`}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {/* Quick Actions */}
+                        <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            Quick Action
+                        </button>
                     </div>
                 </header>
 
                 {/* Page Content */}
-                <div className="p-8">
-                    {renderContent()}
+                <div className="flex-1 overflow-y-auto bg-gray-50">
+                    <div className="max-w-7xl mx-auto p-8">
+                        {renderContent()}
+                    </div>
                 </div>
             </main>
         </div>

@@ -166,7 +166,8 @@ export default function StudentDashboard() {
               { id: 'moodle', label: 'Moodle' },
               { id: 'grades', label: 'Grades' },
               { id: 'attendance', label: 'Attendance' },
-              { id: 'tuition', label: 'Tuition' }
+              { id: 'tuition', label: 'Tuition' },
+              { id: 'payments', label: 'Payments' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -509,6 +510,22 @@ export default function StudentDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Payments Tab */}
+        {activeTab === 'payments' && (
+          <div className="space-y-6">
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p className="text-blue-700">
+                Make secure payments for tuition, fees, and other charges using Stripe. All transactions are encrypted and protected.
+              </p>
+            </div>
+            <iframe 
+              src="/student/payments" 
+              className="w-full h-[800px] border-0 rounded-lg shadow"
+              title="Student Payments"
+            />
           </div>
         )}
       </main>

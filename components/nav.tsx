@@ -9,7 +9,7 @@ const Header: React.FC = () => {
           <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
   <img
     src="/citiedge-logo.png"
-    alt="CITI EDGE Logo"
+    alt="CITIEDGE Logo"
     className="w-full h-full object-cover"
   />
 </div>

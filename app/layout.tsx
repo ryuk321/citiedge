@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CITIEDGE - Educational Portal",
-  description: "Access your student, staff, or agent portal at CITI EDGE. Empowering education through technology and innovation.",
+  description: "Access your student, staff, or agent portal at CITIEDGE. Empowering education through technology and innovation.",
 };
 
 export default function RootLayout({
