@@ -19,7 +19,7 @@
 
 # production
 /build
-
+/public_html
 # misc
 .DS_Store
 *.pem
@@ -46,3 +46,4 @@ QUICK_SETUP.sql
 SETUP_DATABASE.sql
 ServerSide Codes SFTP
 create_student_finance_table.sql
+create_payments_table.sql

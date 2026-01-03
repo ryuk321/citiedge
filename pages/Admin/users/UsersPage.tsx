@@ -10,7 +10,22 @@ interface User {
     email: string;
     role: string;
     status: string;
+    reference_id?: string;
     created_at?: string;
+}
+
+interface StudentOption {
+    student_number: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
+interface StaffOption {
+    staff_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
 }
 
 const UsersPage: React.FC = () => {
@@ -25,6 +40,9 @@ const UsersPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [notification, setNotification] = useState<NotificationProps | null>(null);
+    const [students, setStudents] = useState<StudentOption[]>([]);
+    const [staffList, setStaffList] = useState<StaffOption[]>([]);
+    const [selectedReference, setSelectedReference] = useState<StudentOption | StaffOption | null>(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -33,6 +51,7 @@ const UsersPage: React.FC = () => {
         password: '',
         role: 'staff',
         status: 'active',
+        reference_id: '',
     });
 
     // Fetch users data
@@ -50,6 +69,85 @@ const UsersPage: React.FC = () => {
         setLoading(false);
     };
 
+    // Fetch students for dropdown
+    const loadStudents = async () => {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}?action=getStudents`,
+                {
+                    headers: {
+                        'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY as string,
+                    },
+                }
+            );
+            const data = await response.json();
+            if (data.success) {
+                setStudents(data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching students:', error);
+        }
+    };
+
+    // Fetch staff for dropdown
+    const loadStaff = async () => {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}?action=getStaff`,
+                {
+                    headers: {
+                        'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY as string,
+                    },
+                }
+            );
+            const data = await response.json();
+            if (data.success) {
+                setStaffList(data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching staff:', error);
+        }
+    };
+
+    // Handle role change to fetch appropriate list
+    const handleRoleChange = (role: string) => {
+        setFormData({ ...formData, role, email: '', reference_id: '' });
+        setSelectedReference(null);
+        
+        if (role === 'student' && students.length === 0) {
+            loadStudents();
+        } else if (role === 'staff' && staffList.length === 0) {
+            loadStaff();
+        }
+    };
+
+    // Handle email selection for student/staff
+    const handleEmailSelect = (email: string) => {
+        if (formData.role === 'student') {
+            const student = students.find(s => s.email === email);
+            if (student) {
+                setSelectedReference(student);
+                setFormData({
+                    ...formData,
+                    email: student.email,
+                    username: `${student.first_name} ${student.last_name}`,
+                    reference_id: student.student_number,
+                });
+            }
+        } else if (formData.role === 'staff') {
+            const staff = staffList.find(s => s.email === email);
+            if (staff) {
+                setSelectedReference(staff);
+                setFormData({
+                    ...formData,
+                    email: staff.email,
+                    username: `${staff.first_name} ${staff.last_name}`,
+                    reference_id: staff.staff_id,
+                });
+            }
+        }
+    };
+
     // Add new user
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,7 +160,7 @@ const UsersPage: React.FC = () => {
             ...formData,
             password: hashedPassword
         };
-        
+        // alert("Data to send: " + JSON.stringify(dataToSend));
         const result = await usersAPI.create(dataToSend);
         if (result.success) {
             setNotification({
@@ -72,7 +170,8 @@ const UsersPage: React.FC = () => {
             });
             loadUsers();
             setShowAddForm(false);
-            setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active' });
+            setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active', reference_id: '' });
+            setSelectedReference(null);
         } else {
             setNotification({
                 type: 'error',
@@ -91,6 +190,7 @@ const UsersPage: React.FC = () => {
             password: '',
             role: user.role,
             status: user.status,
+            reference_id: user.reference_id || '',
         });
         setShowEditModal(true);
     };
@@ -120,7 +220,8 @@ const UsersPage: React.FC = () => {
             loadUsers();
             setShowEditModal(false);
             setSelectedUser(null);
-            setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active' });
+            setFormData({ username: '', email: '', password: '', role: 'staff', status: 'active', reference_id: '' });
+            setSelectedReference(null);
         } else {
             setNotification({
                 type: 'error',
@@ -231,33 +332,10 @@ const UsersPage: React.FC = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Add New User</h3>
                     <form onSubmit={handleAddUser} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input
-                                type="text"
-                                placeholder="Username"
-                                value={formData.username}
-                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
-                                required
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
-                                required
-                            />
+                            {/* Role Selection - Should come first to determine other fields */}
                             <select
                                 value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                onChange={(e) => handleRoleChange(e.target.value)}
                                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
                             >
                                 <option value="super_admin">Super Admin</option>
@@ -267,6 +345,78 @@ const UsersPage: React.FC = () => {
                                 <option value="student">Student</option>
                                 <option value="agent">Agent</option>
                             </select>
+
+                            {/* Email - Dropdown for student/staff, input for others */}
+                            {formData.role === 'student' ? (
+                                <select
+                                    value={formData.email}
+                                    onChange={(e) => handleEmailSelect(e.target.value)}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
+                                    required
+                                >
+                                    <option value="">Select Student Email</option>
+                                    {students.map((student) => (
+                                        <option key={student.student_number} value={student.email}>
+                                            {student.email} - {student.first_name} {student.last_name} ({student.student_number})
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : formData.role === 'staff' || formData.role === 'lecturer' ? (
+                                <select
+                                    value={formData.email}
+                                    onChange={(e) => handleEmailSelect(e.target.value)}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
+                                    required
+                                >
+                                    <option value="">Select Staff Email</option>
+                                    {staffList.map((staff) => (
+                                        <option key={staff.staff_id} value={staff.email}>
+                                            {staff.email} - {staff.first_name} {staff.last_name} ({staff.staff_id})
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
+                                    required
+                                />
+                            )}
+
+                            {/* Username - Auto-populated for student/staff */}
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                value={formData.username}
+                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
+                                required
+                                readOnly={formData.role === 'student' || formData.role === 'staff' || formData.role === 'lecturer'}
+                            />
+
+                            {/* Reference ID Display (readonly) */}
+                            {(formData.role === 'student' || formData.role === 'staff' || formData.role === 'lecturer') && formData.reference_id && (
+                                <input
+                                    type="text"
+                                    placeholder="Reference ID"
+                                    value={formData.reference_id}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-black"
+                                    readOnly
+                                />
+                            )}
+                            
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 text-black"
+                                required
+                            />
+                            
                             <select
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -280,14 +430,25 @@ const UsersPage: React.FC = () => {
                         <div className="flex gap-3">
                             <button
                                 type="submit"
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-black"
+                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                             >
                                 Save User
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setShowAddForm(false)}
-                                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-black"
+                                onClick={() => {
+                                    setShowAddForm(false);
+                                    setFormData({ 
+                                        username: '', 
+                                        email: '', 
+                                        password: '', 
+                                        role: 'staff', 
+                                        status: 'active', 
+                                        reference_id: '' 
+                                    });
+                                    setSelectedReference(null);
+                                }}
+                                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                             >
                                 Cancel
                             </button>
@@ -303,6 +464,7 @@ const UsersPage: React.FC = () => {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Username</th>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reference ID</th>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Role</th>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
                             <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
@@ -311,13 +473,13 @@ const UsersPage: React.FC = () => {
                     <tbody className="divide-y divide-gray-200">
                         {loading ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                     Loading users...
                                 </td>
                             </tr>
                         ) : filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                     No users found
                                 </td>
                             </tr>
@@ -326,6 +488,15 @@ const UsersPage: React.FC = () => {
                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.username}</td>
                                     <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600 font-mono">
+                                        {user.reference_id ? (
+                                            <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+                                                {user.reference_id}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400">—</span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                             user.role === 'super_admin'

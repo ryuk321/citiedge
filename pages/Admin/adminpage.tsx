@@ -11,7 +11,9 @@ import AttendancePage from './attendance/AttendancePage';
 import UsersPage from './users/UsersPage';
 import DashboardPage from './components/Dashboard';
 import AcademicCalendarPage from './calendar/AcademicCalendarPage';
-    import StudentFinancePage from './finance/StudentFinancePage';
+import StudentFinancePage from './finance/StudentFinancePage';
+import AccountsPage from './finance/AccountsPage';
+import AddStudent from './students/NewAddStudent';
 
 interface SubMenuItem {
     id: string;
@@ -27,7 +29,7 @@ interface MenuItem {
 
 const AdminPage: React.FC = () => {
     // Protect this page - only admin and super_admin can access
-    useProtectedRoute(['super_admin', 'admin', 'agent']);
+    useProtectedRoute(['super_admin', 'admin', ]);
     
     const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
     const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -51,8 +53,8 @@ const AdminPage: React.FC = () => {
             ),
             subItems: [
                 { id: 'overview', name: 'Overview' },
-                { id: 'analytics', name: 'Analytics' },
-                { id: 'reports', name: 'Reports' },
+                // { id: 'analytics', name: 'Analytics' },
+                // { id: 'reports', name: 'Reports' },
             ],
         },
         {
@@ -65,9 +67,9 @@ const AdminPage: React.FC = () => {
             ),
             subItems: [
                 { id: 'all-students', name: 'All Students' },
-                { id: 'add-student', name: 'Add Student' },
-                { id: 'student-records', name: 'Student Records' },
-                { id: 'enrollment', name: 'Enrollment' },
+                // { id: 'add-student', name: 'Add Student' },
+                // { id: 'student-records', name: 'Student Records' },
+                // { id: 'enrollment', name: 'Enrollment' },
             ],
         },
         {
@@ -80,9 +82,9 @@ const AdminPage: React.FC = () => {
             ),
             subItems: [
                 { id: 'all-staff', name: 'All Staff' },
-                { id: 'add-staff', name: 'Add Staff' },
-                { id: 'staff-schedule', name: 'Schedule' },
-                { id: 'departments', name: 'Departments' },
+                // { id: 'add-staff', name: 'Add Staff' },
+                // { id: 'staff-schedule', name: 'Schedule' },
+                // { id: 'departments', name: 'Departments' },
             ],
         },
         {
@@ -95,9 +97,9 @@ const AdminPage: React.FC = () => {
             ),
             subItems: [
                 { id: 'all-resources', name: 'All Resources' },
-                { id: 'add-resource', name: 'Add Resource' },
-                { id: 'categories', name: 'Categories' },
-                { id: 'borrowed-items', name: 'Borrowed Items' },
+                // { id: 'add-resource', name: 'Add Resource' },
+                // { id: 'categories', name: 'Categories' },
+                // { id: 'borrowed-items', name: 'Borrowed Items' },
             ],
         },
         {
@@ -153,6 +155,7 @@ const AdminPage: React.FC = () => {
                 </svg>
             ),
             subItems: [
+                { id: 'accounts', name: 'Accounts' },
                 { id: 'transactions', name: 'Transactions' },
                 { id: 'payment-history', name: 'Payment History' },
                 { id: 'financial-aid', name: 'Financial Aid' },
@@ -186,6 +189,10 @@ const AdminPage: React.FC = () => {
         setActiveMenu(menuId);
         if (subMenuId) {
             setActiveSubMenu(subMenuId);
+            // Special handling for add-student - trigger modal
+            // if (subMenuId === 'add-student') {
+            //     setTimeout(() => showAddStudentModal(), 100);
+            // }
         } else {
             setActiveSubMenu('');
         }
@@ -200,26 +207,103 @@ const AdminPage: React.FC = () => {
         const pageKey = activeSubMenu || activeMenu;
 
         switch (pageKey) {
+            // Dashboard menu
             case 'dashboard':
+            case 'overview':
                 return <DashboardPage />;
-            case 'students':
-                return <StudentsPage />;
-            case 'staff':
-                return <StaffPage />;
-            case 'library':
-                return <LibraryPage />;
-            case 'tuition':
-                return <TuitionPage />;
-            case 'attendance':
-                return <AttendancePage />;
-            case 'calendar':
-                return <AcademicCalendarPage />;
-            case 'finance':
-                return <StudentFinancePage />;
-            case 'users':
-                return <UsersPage />;
             case 'analytics':
-                return <DashboardPage />;
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Analytics</h3><p className="text-gray-600 mt-2">Analytics dashboard coming soon...</p></div>;
+            case 'reports':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Reports</h3><p className="text-gray-600 mt-2">Reports section coming soon...</p></div>;
+            
+            // Students menu
+            case 'students':
+            case 'all-students':
+                return <StudentsPage />;
+            case 'add-student':
+                return <AddStudent />;
+            case 'student-records':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Student Records</h3><p className="text-gray-600 mt-2">Student records management coming soon...</p></div>;
+            case 'enrollment':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Enrollment</h3><p className="text-gray-600 mt-2">Enrollment management coming soon...</p></div>;
+            
+            // Staff menu
+            case 'staff':
+            case 'all-staff':
+                return <StaffPage />;
+            case 'add-staff':
+                return <StaffPage />;
+            case 'staff-schedule':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Staff Schedule</h3><p className="text-gray-600 mt-2">Staff scheduling coming soon...</p></div>;
+            case 'departments':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Departments</h3><p className="text-gray-600 mt-2">Department management coming soon...</p></div>;
+            
+            // Library menu
+            case 'library':
+            case 'all-resources':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Categories</h3><p className="text-gray-600 mt-2">Resource categories management coming soon...</p></div>;;
+            case 'add-resource':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Categories</h3><p className="text-gray-600 mt-2">Resource categories management coming soon...</p></div>;;
+            case 'categories':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Categories</h3><p className="text-gray-600 mt-2">Resource categories management coming soon...</p></div>;
+            case 'borrowed-items':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Borrowed Items</h3><p className="text-gray-600 mt-2">Borrowed items tracking coming soon...</p></div>;
+            
+            // Tuition menu
+            case 'tuition':
+            case 'fee-structure':
+                return <TuitionPage />;
+            case 'payments':
+                return <TuitionPage />;
+            case 'invoices':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Invoices</h3><p className="text-gray-600 mt-2">Invoice management coming soon...</p></div>;
+            case 'scholarships':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Scholarships</h3><p className="text-gray-600 mt-2">Scholarship management coming soon...</p></div>;
+            
+            // Attendance menu
+            case 'attendance':
+            case 'mark-attendance':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Attendance Page</h3><p className="text-gray-600 mt-2">Attendance reports coming soon...</p></div>;
+            case 'attendance-reports':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Attendance Reports</h3><p className="text-gray-600 mt-2">Attendance reports coming soon...</p></div>;
+            case 'attendance-settings':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Attendance Settings</h3><p className="text-gray-600 mt-2">Attendance settings coming soon...</p></div>;
+            
+            // Calendar menu
+            case 'calendar':
+            case 'view-calendar':
+                return <AcademicCalendarPage />;
+            case 'add-event':
+                return <AcademicCalendarPage />;
+            case 'exam-schedule':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Exam Schedule</h3><p className="text-gray-600 mt-2">Exam scheduling coming soon...</p></div>;
+            case 'holidays':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Holidays</h3><p className="text-gray-600 mt-2">Holiday management coming soon...</p></div>;
+            
+            // Finance menu
+            case 'finance':
+            case 'accounts':
+                return <AccountsPage />;
+            case 'transactions':
+                return <StudentFinancePage />;
+            case 'payment-history':
+                return <StudentFinancePage />;
+            case 'financial-aid':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Financial Aid</h3><p className="text-gray-600 mt-2">Financial aid management coming soon...</p></div>;
+            case 'billing':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Billing</h3><p className="text-gray-600 mt-2">Billing management coming soon...</p></div>;
+            
+            // Users menu
+            case 'users':
+            case 'all-users':
+                return <UsersPage />;
+            case 'add-user':
+                return <UsersPage />;
+            case 'roles':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Roles & Permissions</h3><p className="text-gray-600 mt-2">Role management coming soon...</p></div>;
+            case 'activity-log':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Activity Log</h3><p className="text-gray-600 mt-2">Activity logging coming soon...</p></div>;
+            
             default:
                 return <DashboardPage />;
         }
@@ -342,6 +426,9 @@ const AdminPage: React.FC = () => {
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col h-screen overflow-hidden">
+                {/* Add Student Modal - Always rendered, manages its own visibility */}
+                {/* <AddStudent /> */}
+                
                 {/* Top Header Bar */}
                 <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                     <div>

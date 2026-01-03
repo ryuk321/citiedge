@@ -7,6 +7,7 @@ const API_BASE_URL = 'https://citiedgecollege.co.uk/student_api.php';
 
 export interface AuthUser {
   id: string;
+  student_number?: string;
   email: string;
   username: string;
   role: 'student' | 'staff' | 'lecturer' | 'admin' | 'super_admin' | 'agent';
@@ -33,6 +34,7 @@ export const login = async (email: string, password: string): Promise<{ success:
     if (result.success && result.user) {
       const authUser: AuthUser = {
         id: result.user.id,
+        student_number: result.user.student_number,
         email: result.user.email,
         username: result.user.username,
         role: result.user.role,
@@ -123,7 +125,7 @@ export const getRoleBasedPath = (role: string): string => {
     case 'lecturer':
       return '/staff/portal';
     case 'student':
-      return '/student/portal';
+      return '/student/portal-new';
     case 'agent':
       return '/Admin/adminpage';
     default:

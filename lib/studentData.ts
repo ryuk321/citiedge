@@ -98,8 +98,53 @@ export async function fetchStudentProfile(studentId: string): Promise<Student> {
 }
 
 export async function fetchTuitionFees(studentId: string): Promise<TuitionFee[]> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
+  try {
+    // Fetch from PHP API
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portal.citiedge.uk/public_html';
+    const apiUrl = `${apiBaseUrl}/student_api.php?action=getStudentTuitionFees&student_id=${encodeURIComponent(studentId)}`;
+    
+    console.log('Fetching tuition fees from:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY || 'super-secret-key'
+      }
+    });
+    
+    console.log('Response status:', response.status, response.statusText);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      throw new Error(`Failed to fetch tuition fees: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('Tuition fees data:', data);
+
+    if (!data.success || !data.fees) {
+      // Return mock data if API fails
+      return getMockTuitionFees();
+    }
+
+    // Transform PHP API data to match our interface
+    return data.fees.map((fee: any) => ({
+      id: fee.id.toString(),
+      semester: fee.semester,
+      totalAmount: parseFloat(fee.total_amount),
+      paidAmount: parseFloat(fee.paid_amount),
+      dueAmount: parseFloat(fee.due_amount),
+      dueDate: fee.due_date,
+      status: fee.status as 'paid' | 'pending' | 'overdue'
+    }));
+  } catch (error) {
+    console.error('Error fetching tuition fees:', error);
+    // Return mock data as fallback
+    return getMockTuitionFees();
+  }
+}
+
+function getMockTuitionFees(): TuitionFee[] {
   return [
     {
       id: "1",

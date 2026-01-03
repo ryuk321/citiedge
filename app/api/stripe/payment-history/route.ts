@@ -2,7 +2,7 @@
  * ========================================
  * GET PAYMENT HISTORY API ROUTE
  * ========================================
- * This API retrieves payment history for a specific student
+ * This API retrieves payment history for a specific student from database
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,19 +20,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch payment history from API
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/payments/history?studentId=${studentId}`;
-    const response = await fetch(apiUrl);
+    // Get API URL from environment or use default
+    const apiBaseUrl = process.env.API_BASE_URL || 'https://portals.citiedge.uk/public_html';
+    const apiUrl = `${apiBaseUrl}/student_api.php?action=getPaymentHistory&student_id=${encodeURIComponent(studentId)}`;
+
+    // Fetch payment history from PHP API
+    const response = await fetch(apiUrl, {
+      headers: {
+        'X-API-KEY': process.env.API_KEY || 'super-secret-key'
+      }
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch payment history from API');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to fetch payment history');
     }
 
     const data = await response.json();
 
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch payment history');
+    }
+
     return NextResponse.json({
       success: true,
-      payments: data.payments || data,
+      payments: data.payments || [],
     });
 
   } catch (error: any) {

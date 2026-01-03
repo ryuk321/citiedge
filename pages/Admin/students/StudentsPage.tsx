@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { studentsAPI } from "../../../lib/api";
 import { StudentInfo } from "../../../lib/DB_Table";
 import { logout, getAuthUser } from "../../../lib/auth";
+import AddStudent, { showAddStudentModal, setStudentsRefreshCallback } from "./AddStudent";
 
 interface Student {
   id: string;
@@ -16,14 +17,13 @@ const StudentsPage: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Form state
+  // Form state for editing existing students
   const [formData, setFormData] = useState({
-    student_number: "", // unique ID, can be auto-generated
+    student_number: "",
     first_name: "",
     last_name: "",
     email: "",
@@ -33,11 +33,16 @@ const StudentsPage: React.FC = () => {
     gender: "",
     address: "",
     nationality: "",
-    course_id: "", // numeric ID from courses table
-    enrollment_date: "", // YYYY-MM-DD
-    intake: "", // e.g. "Fall 2025"
+    course_id: "",
+    enrollment_date: "",
+    intake: "",
     status: "active",
   });
+
+  // Register refresh callback for AddStudent modal
+  useEffect(() => {
+    setStudentsRefreshCallback(loadStudents);
+  }, []);
 
   // Fetch students data
   const loadStudents = async () => {
@@ -62,45 +67,6 @@ const StudentsPage: React.FC = () => {
     }
 
     setLoading(false);
-  };
-
-  // Add new student
-  const handleAddStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const result = await studentsAPI.add(formData);
-
-      if (result.success) {
-        // reload the student list
-        loadStudents();
-
-        // close the add form
-        setShowAddForm(false);
-
-        // reset all fields back to defaults
-        setFormData({
-          student_number: "", // unique ID, can be auto-generated
-          first_name: "",
-          last_name: "",
-          email: "",
-          phone: "",
-          dob: "",
-          age: "",
-          gender: "",
-          address: "",
-          nationality: "",
-          course_id: "", // numeric ID from courses table
-          enrollment_date: "", // YYYY-MM-DD
-          intake: "", // e.g. "Fall 2025"
-          status: "active",
-        });
-      } else {
-        console.error("Failed to add student:", result.error);
-      }
-    } catch (error) {
-      console.error("Error adding student:", error);
-    }
   };
 
   // Delete student
@@ -211,7 +177,7 @@ const StudentsPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowAddForm(true)}
+            onClick={showAddStudentModal}
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all"
           >
             <svg
@@ -255,242 +221,8 @@ const StudentsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Add Student Form */}
-      {showAddForm && (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
-            Add New Student
-          </h3>
-          <form onSubmit={handleAddStudent} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Student Number */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">
-                  Student Number
-                </span>
-                <input
-                  type="text"
-                  value={formData.student_number}
-                  onChange={(e) =>
-                    setFormData({ ...formData, student_number: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* First Name */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">First Name</span>
-                <input
-                  type="text"
-                  value={formData.first_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, first_name: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* Last Name */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Last Name</span>
-                <input
-                  type="text"
-                  value={formData.last_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, last_name: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* Email */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Email</span>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* Date of Birth */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">
-                  Date of Birth
-                </span>
-                <input
-                  type="date"
-                  value={formData.dob}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dob: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* Age */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Age</span>
-                <input
-                  type="number"
-                  value={formData.age}
-                  onChange={(e) =>
-                    setFormData({ ...formData, age: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                />
-              </label>
-
-              {/* Phone */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Phone Number</span>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                />
-              </label>
-
-              {/* Gender */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Gender</span>
-                <select
-                  value={formData.gender}
-                  onChange={(e) =>
-                    setFormData({ ...formData, gender: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </label>
-
-              {/* Address */}
-              <label className="flex flex-col md:col-span-2">
-                <span className="text-sm text-gray-700 mb-1">Address</span>
-                <textarea
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  rows={2}
-                />
-              </label>
-
-              {/* Nationality */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Nationality</span>
-                <input
-                  type="text"
-                  value={formData.nationality}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nationality: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                />
-              </label>
-
-              {/* Course ID */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Course ID</span>
-                <input
-                  type="text"
-                  value={formData.course_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, course_id: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                  required
-                />
-              </label>
-
-              {/* Enrollment Date */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">
-                  Enrollment Date
-                </span>
-                <input
-                  type="date"
-                  value={formData.enrollment_date}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      enrollment_date: e.target.value,
-                    })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                />
-              </label>
-
-              {/* Intake */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Intake</span>
-                <select
-                  value={formData.intake}
-                  onChange={(e) =>
-                    setFormData({ ...formData, intake: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                >
-                  <option value="">Select Intake</option>
-                  <option value="Fall 2025">Fall 2025</option>
-                  <option value="Spring 2026">Spring 2026</option>
-                </select>
-              </label>
-
-              {/* Status */}
-              <label className="flex flex-col">
-                <span className="text-sm text-gray-700 mb-1">Status</span>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="graduated">Graduated</option>
-                  <option value="withdrawn">Withdrawn</option>
-                </select>
-              </label>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Save Student
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      {/* Add Student Modal - Always rendered, controls its own visibility */}
+      <AddStudent />
 
       {/* Students Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
