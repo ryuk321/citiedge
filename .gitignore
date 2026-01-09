@@ -47,3 +47,6 @@ SETUP_DATABASE.sql
 ServerSide Codes SFTP
 create_student_finance_table.sql
 create_payments_table.sql
+
+# local env files
+Project_Instructions_Readme
