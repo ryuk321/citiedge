@@ -14,6 +14,7 @@ import AcademicCalendarPage from './calendar/AcademicCalendarPage';
 import StudentFinancePage from './finance/StudentFinancePage';
 import AccountsPage from './finance/AccountsPage';
 import AddStudent from './students/NewAddStudent';
+import OfqualEnrollmentsPage from './ofqual-enrollments/OfqualEnrollmentsPage';
 
 interface SubMenuItem {
     id: string;
@@ -177,6 +178,19 @@ const AdminPage: React.FC = () => {
                 { id: 'activity-log', name: 'Activity Log' },
             ],
         },
+        {
+            id: 'ofqual',
+            name: 'Ofqual Enrollments',
+            icon: (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            ),
+            subItems: [
+                { id: 'all-enrollments', name: 'All Enrollments' },
+                // { id: 'enrollment-stats', name: 'Statistics' },
+            ],
+        },
     ];
 
     const toggleMenu = (menuId: string) => {
@@ -303,6 +317,12 @@ const AdminPage: React.FC = () => {
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Roles & Permissions</h3><p className="text-gray-600 mt-2">Role management coming soon...</p></div>;
             case 'activity-log':
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Activity Log</h3><p className="text-gray-600 mt-2">Activity logging coming soon...</p></div>;
+            
+            // Ofqual Enrollments menu
+            case 'ofqual':
+            case 'all-enrollments':
+            case 'enrollment-stats':
+                return <OfqualEnrollmentsPage />;
             
             default:
                 return <DashboardPage />;

@@ -239,6 +239,22 @@ export default function StudentPortal() {
                 </button>
               ))}
             </nav>
+            
+            {/* Logout Button */}
+            <div className="p-3 border-t border-slate-200 mt-2">
+              <button 
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="text-[13px] font-medium">Logout</span>
+              </button>
+            </div>
           </div>
         </>
       )}
