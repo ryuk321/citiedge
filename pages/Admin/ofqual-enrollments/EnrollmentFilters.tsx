@@ -25,7 +25,7 @@ const EnrollmentFilters: React.FC<FiltersProps> = ({ filters = { status: '', lev
               placeholder="Name, email, or application ref..."
               value={filters.searchTerm}
               onChange={(e) => onFilterChange('searchTerm', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
             />
             <svg 
               className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" 
@@ -46,15 +46,15 @@ const EnrollmentFilters: React.FC<FiltersProps> = ({ filters = { status: '', lev
           <select
             value={filters.status}
             onChange={(e) => onFilterChange('status', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
           >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="under_review">Under Review</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-            <option value="enrolled">Enrolled</option>
-            <option value="withdrawn">Withdrawn</option>
+            <option  className="text-black"value="all">All Status</option>
+            <option  className="text-black"value="pending">Pending</option>
+            <option  className="text-black"value="under_review">Under Review</option>
+            <option  className="text-black"value="approved">Approved</option>
+            <option  className="text-black"value="rejected">Rejected</option>
+            <option  className="text-black"value="enrolled">Enrolled</option>
+            <option  className="text-black"value="withdrawn">Withdrawn</option>
           </select>
         </div>
 
@@ -66,15 +66,15 @@ const EnrollmentFilters: React.FC<FiltersProps> = ({ filters = { status: '', lev
           <select
             value={filters.level}
             onChange={(e) => onFilterChange('level', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
           >
-            <option value="all">All Levels</option>
-            <option value="Level 3">Level 3</option>
-            <option value="Level 4">Level 4</option>
-            <option value="Level 5">Level 5</option>
-            <option value="Level 6">Level 6</option>
-            <option value="Level 7">Level 7</option>
-            <option value="Level 8">Level 8</option>
+            <option className="text-black"value="all">All Levels</option>
+            <option className="text-black" value="Level 3">Level 3</option>
+            <option className="text-black" value="Level 4">Level 4</option>
+            <option className="text-black" value="Level 5">Level 5</option>
+            <option className="text-black" value="Level 6">Level 6</option>
+            <option className="text-black" value="Level 7">Level 7</option>
+            <option className="text-black" value="Level 8">Level 8</option>
           </select>
         </div>
       </div>
@@ -88,11 +88,11 @@ const EnrollmentFilters: React.FC<FiltersProps> = ({ filters = { status: '', lev
           <select
             value={filters.organisation}
             onChange={(e) => onFilterChange('organisation', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
           >
-            <option value="all">All Organisations</option>
-            <option value="OTHM">OTHM</option>
-            <option value="QUALIFI">QUALIFI</option>
+            <option className="text-black" value="all">All Organisations</option>
+            <option className="text-black" value="OTHM">OTHM</option>
+            <option className="text-black" value="QUALIFI">QUALIFI</option>
           </select>
         </div>
 

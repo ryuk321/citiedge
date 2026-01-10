@@ -337,9 +337,13 @@ const AdminPage: React.FC = () => {
                 <div className="p-6 border-b border-gray-800">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">C</span>
-                            </div>
+                            <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full overflow-hidden mb-4 shadow-lg">
+  <img
+    src="/citiedge-logo.png"
+    alt="CITIEDGE Logo"
+    className="w-full h-full object-cover"
+  />
+</div>
                             <div>
                                 <h1 className="text-white font-bold text-lg">CITIEDGE</h1>
                                 <p className="text-xs text-gray-500">Admin Portal</p>
@@ -470,9 +474,9 @@ const AdminPage: React.FC = () => {
                             </svg>
                             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        {/* <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
                             Quick Action
-                        </button>
+                        </button> */}
                     </div>
                 </header>
 

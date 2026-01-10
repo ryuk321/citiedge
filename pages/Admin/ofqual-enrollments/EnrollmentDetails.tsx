@@ -44,7 +44,7 @@ const EnrollmentDetails: React.FC<DetailsProps> = ({ enrollment, onClose, onUpda
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
         onClick={onClose}
       />
       
@@ -76,7 +76,7 @@ const EnrollmentDetails: React.FC<DetailsProps> = ({ enrollment, onClose, onUpda
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold mb-1">Current Status</p>
-                      <p className="text-2xl font-bold uppercase">{enrollment.status.replace('_', ' ')}</p>
+                      <p className="text-2xl font-bold uppercase">{enrollment?.status?.replace('_', ' ') ?? 'N/A'}</p>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold mb-2">Update Status</label>
@@ -87,14 +87,14 @@ const EnrollmentDetails: React.FC<DetailsProps> = ({ enrollment, onClose, onUpda
                             onUpdateStatus(enrollment.id, e.target.value);
                           }
                         }}
-                        className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm font-medium"
+                        className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray text-sm font-medium text-black"
                       >
-                        <option value="pending">Pending</option>
-                        <option value="under_review">Under Review</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="enrolled">Enrolled</option>
-                        <option value="withdrawn">Withdrawn</option>
+                        <option  className="text-black" value="pending">Pending</option>
+                        <option   className="text-black" value="under_review">Under Review</option>
+                        <option  className="text-black" value="approved">Approved</option>
+                        <option className="text-black" value="rejected">Rejected</option>
+                        <option className="text-black" value="enrolled">Enrolled</option>
+                        <option className="text-black" value="withdrawn">Withdrawn</option>
                       </select>
                     </div>
                   </div>
