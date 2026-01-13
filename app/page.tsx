@@ -22,7 +22,7 @@ export default function Home() {
           </div>
 
           {/* Hero Image Placeholder */}
-          <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl mb-16">
+          {/* <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl mb-16">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-indigo-600/90 flex items-center justify-center">
               <div className="text-center text-white">
                 <svg className="w-24 h-24 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ export default function Home() {
                 <p className="text-blue-100 mt-2">Building futures through knowledge and innovation</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 

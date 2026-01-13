@@ -196,7 +196,7 @@ const StudentsPage: React.FC = () => {
             Add Student
           </button>
           {/* User Profile & Logout */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
               <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
@@ -217,7 +217,7 @@ const StudentsPage: React.FC = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

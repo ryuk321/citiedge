@@ -50,3 +50,6 @@ create_payments_table.sql
 
 # local env files
 Project_Instructions_Readme
+
+create_application_table.sql
+

@@ -15,6 +15,7 @@ import StudentFinancePage from './finance/StudentFinancePage';
 import AccountsPage from './finance/AccountsPage';
 import AddStudent from './students/NewAddStudent';
 import OfqualEnrollmentsPage from './ofqual-enrollments/OfqualEnrollmentsPage';
+import ApplicationsPage from './applications/ApplicationsPage';
 
 interface SubMenuItem {
     id: string;
@@ -67,8 +68,9 @@ const AdminPage: React.FC = () => {
                 </svg>
             ),
             subItems: [
-                { id: 'all-students', name: 'All Students' },
-                // { id: 'add-student', name: 'Add Student' },
+                { id: 'applications', name: 'Applications' },
+                { id: 'all-students', name: 'Enrolled Students' },
+                { id: 'all-enrollments', name: 'OFQUAL Enrollments' },
                 // { id: 'student-records', name: 'Student Records' },
                 // { id: 'enrollment', name: 'Enrollment' },
             ],
@@ -191,6 +193,18 @@ const AdminPage: React.FC = () => {
                 // { id: 'enrollment-stats', name: 'Statistics' },
             ],
         },
+        // {
+        //     id: 'applications',
+        //     name: 'Applications',
+        //     icon: (
+        //         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        //         </svg>
+        //     ),
+        //     subItems: [
+        //         { id: 'all-applications', name: 'All Applications' },
+        //     ],
+        // },
     ];
 
     const toggleMenu = (menuId: string) => {
@@ -323,6 +337,11 @@ const AdminPage: React.FC = () => {
             case 'all-enrollments':
             case 'enrollment-stats':
                 return <OfqualEnrollmentsPage />;
+            
+            // Applications menu
+            case 'applications':
+            case 'all-applications':
+                return <ApplicationsPage />;
             
             default:
                 return <DashboardPage />;

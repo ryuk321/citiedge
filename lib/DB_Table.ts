@@ -197,6 +197,252 @@ export interface AcademicCalendar {
   updated_at?: string;
 }
 
+// For Applications database
+export type ApplicationStatus = 
+    | 'pending'
+    | 'under_review'
+    | 'accepted'
+    | 'rejected'
+    | 'withdrawn'
+    | 'deferred';
+
+/**
+ * Academic History Entry
+ */
+export interface AcademicHistoryEntry {
+    institution: string;
+    country: string;
+    qualification: string;
+    subject: string;
+    start: string;
+    end: string;
+    grade: string;
+}
+
+/**
+ * Employment History Entry
+ */
+export interface EmploymentHistoryEntry {
+    employer: string;
+    title: string;
+    start: string;
+    end: string;
+}
+
+/**
+ * Reference Entry
+ */
+export interface ReferenceEntry {
+    name: string;
+    relationship: string;
+    email: string;
+    contact: string;
+}
+
+/**
+ * Agent Information
+ */
+export interface AgentInformation {
+    isAgentApplication: 'Yes' | 'No';
+    agentName?: string;
+    agentCompany?: string;
+    agentEmail?: string;
+    agentPhone?: string;
+}
+
+/**
+ * Main Application/Lead Interface
+ * Represents a single application record in the database
+ */
+export interface ApplicationLead {
+    // Primary Key
+    id: number;
+    
+    // SECTION 1: Personal Information
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    dateOfBirth: string; // Date in YYYY-MM-DD format
+    gender: string;
+    nationality: string;
+    countryOfResidence: string;
+    passportNumber?: string;
+    
+    // Contact Information
+    email: string;
+    phone: string;
+    phoneCountry: string;
+    address: string;
+    city: string;
+    state?: string;
+    postalCode: string;
+    country: string;
+    
+    // SECTION 2: Course Selection
+    programme: string;
+    intakeDate: string;
+    studyMode: string;
+    campus: string;
+    levelOfStudy: string;
+    
+    // SECTION 3: Academic History (up to 3 entries)
+    institutionName?: string;
+    countryOfStudy?: string;
+    qualification?: string;
+    subject?: string;
+    startDate?: string;
+    endDate?: string;
+    grade?: string;
+    
+    institutionName2?: string;
+    countryOfStudy2?: string;
+    qualification2?: string;
+    subject2?: string;
+    startDate2?: string;
+    endDate2?: string;
+    grade2?: string;
+    
+    institutionName3?: string;
+    countryOfStudy3?: string;
+    qualification3?: string;
+    subject3?: string;
+    startDate3?: string;
+    endDate3?: string;
+    grade3?: string;
+    
+    // SECTION 4: English Language Proficiency
+    englishProficiencyType: string;
+    testName?: string;
+    testScore?: string;
+    testDate?: string;
+    
+    // SECTION 5: Employment History (up to 2 entries)
+    employerName?: string;
+    jobTitle?: string;
+    employmentStart?: string;
+    employmentEnd?: string;
+    
+    employerName2?: string;
+    jobTitle2?: string;
+    employmentStart2?: string;
+    employmentEnd2?: string;
+    
+    // SECTION 6: References (2 entries)
+    refName?: string;
+    refRelationship?: string;
+    refEmail?: string;
+    refContact?: string;
+    
+    refName2?: string;
+    refRelationship2?: string;
+    refEmail2?: string;
+    refContact2?: string;
+    
+    // SECTION 7: Funding & Scholarships
+    funding: string;
+    applyScholarship?: 'Yes' | 'No';
+    scholarshipName?: string;
+    
+    // SECTION 7B: Agent Information
+    isAgentApplication: 'Yes' | 'No';
+    agentName?: string;
+    agentCompany?: string;
+    agentEmail?: string;
+    agentPhone?: string;
+    
+    // SECTION 8: Additional Information
+    disability: 'Yes' | 'No';
+    disabilityDetails?: string;
+    criminalConviction: 'Yes' | 'No';
+    convictionDetails?: string;
+    additionalInfo?: string;
+    
+    // SECTION 9: Declaration
+    declaration: 'Yes' | 'No';
+    signatureName: string;
+    signatureDate: string;
+    
+    // File Attachments
+    filePaths?: string[]; // Array of file names
+    
+    // Application Status & Metadata
+    status: ApplicationStatus;
+    submissionDate: string; // DateTime in ISO format
+    lastUpdated?: string; // DateTime in ISO format
+    notes?: string;
+    assignedTo?: string;
+}
+
+/**
+ * Create Application DTO (Data Transfer Object)
+ * Used when creating a new application (excludes auto-generated fields)
+ */
+export type CreateApplicationDTO = Omit<ApplicationLead, 'id' | 'submissionDate' | 'lastUpdated'>;
+
+/**
+ * Update Application DTO
+ * Used when updating an existing application (all fields optional except id)
+ */
+export type UpdateApplicationDTO = Partial<ApplicationLead> & { id: number };
+
+/**
+ * Application List Item
+ * Simplified interface for list views
+ */
+export interface ApplicationListItem {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    programme: string;
+    status: ApplicationStatus;
+    submissionDate: string;
+    isAgentApplication: 'Yes' | 'No';
+    agentCompany?: string;
+}
+
+/**
+ * Application Statistics
+ */
+export interface ApplicationStatistics {
+    total: number;
+    pending: number;
+    underReview: number;
+    accepted: number;
+    rejected: number;
+    withdrawn: number;
+    deferred: number;
+    byAgent: number;
+    directApplications: number;
+}
+
+/**
+ * Search/Filter Parameters
+ */
+export interface ApplicationSearchParams {
+    status?: ApplicationStatus;
+    programme?: string;
+    fromDate?: string;
+    toDate?: string;
+    isAgentApplication?: 'Yes' | 'No';
+    agentEmail?: string;
+    searchTerm?: string; // For name/email search
+    page?: number;
+    limit?: number;
+}
+
+/**
+ * Paginated Response
+ */
+export interface PaginatedApplications {
+    data: ApplicationLead[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+// End of Applications database interfaces
+
 /*
   SQL TABLE CREATION for academic_calendar:
   
