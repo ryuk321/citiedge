@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import ApplicationsDashboard from './ApplicationsDashboard';
 import ApplicationsTable from './ApplicationsTable';
 import EditApplicationModal from './EditApplicationModal';
+import ApplicationDetailView from './ApplicationDetailView';
+import { ApplicationLead } from '@/lib/DB_Table';
 
 interface Application {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   programme: string;
   status: string;
@@ -25,16 +27,39 @@ type ViewType = 'dashboard' | 'table';
 const ApplicationsPage: React.FC = () => {
   const [view, setView] = useState<ViewType>('dashboard');
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
+
+  const handleView = (id: number) => {
+    setSelectedApplicationId(id);
+    setIsDetailViewOpen(true);
+  };
 
   const handleEdit = (app: Application) => {
     setSelectedApplication(app);
     setIsModalOpen(true);
   };
 
+  const handleEditFromDetail = (app: ApplicationLead) => {
+    setSelectedApplication(app as any);
+    setIsDetailViewOpen(false);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    // Delete is handled by ApplicationsTable internally
+    // This callback can be used for additional cleanup if needed
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedApplication(null);
+  };
+
+  const handleDetailViewClose = () => {
+    setIsDetailViewOpen(false);
+    setSelectedApplicationId(null);
   };
 
   const handleSave = (updatedApp: Application) => {
@@ -92,9 +117,22 @@ const ApplicationsPage: React.FC = () => {
         {view === 'dashboard' ? (
           <ApplicationsDashboard />
         ) : (
-          <ApplicationsTable onEdit={handleEdit} />
+          <ApplicationsTable 
+            onView={handleView} 
+            onEdit={handleEdit} 
+            onDelete={handleDelete}
+          />
         )}
       </div>
+
+      {/* Detail View */}
+      {isDetailViewOpen && selectedApplicationId && (
+        <ApplicationDetailView
+          applicationId={selectedApplicationId}
+          onClose={handleDetailViewClose}
+          onEdit={handleEditFromDetail}
+        />
+      )}
 
       {/* Edit Modal */}
       <EditApplicationModal

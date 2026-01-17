@@ -13,6 +13,7 @@ export interface AuthUser {
   role: 'student' | 'staff' | 'lecturer' | 'admin' | 'super_admin' | 'agent';
   status: string;
   details?: any; // Additional user details (student_info or staff_info)
+  reference_id?: string;
 }
 
 /**
@@ -40,6 +41,7 @@ export const login = async (email: string, password: string): Promise<{ success:
         role: result.user.role,
         status: result.user.status,
         details: result.details,
+        reference_id: result.user.reference_id,
       };
 
       // Store user in localStorage
@@ -121,7 +123,7 @@ export const getRoleBasedPath = (role: string): string => {
     case 'admin':
       return '/Admin/adminpage';
     case 'staff':
-      return '/staff/portal';
+      return '/staff/new-portal';
     case 'lecturer':
       return '/staff/portal';
     case 'student':

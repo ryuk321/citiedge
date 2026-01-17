@@ -16,6 +16,7 @@ import AccountsPage from './finance/AccountsPage';
 import AddStudent from './students/NewAddStudent';
 import OfqualEnrollmentsPage from './ofqual-enrollments/OfqualEnrollmentsPage';
 import ApplicationsPage from './applications/ApplicationsPage';
+import StaffRolesPage from './staff/StaffRolesPage';
 
 interface SubMenuItem {
     id: string;
@@ -38,6 +39,7 @@ const AdminPage: React.FC = () => {
     const [activeSubMenu, setActiveSubMenu] = useState('');
     const [expandedMenus, setExpandedMenus] = useState<string[]>(['dashboard']);
     const [searchQuery, setSearchQuery] = useState('');
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     useEffect(() => {
         setCurrentUser(getAuthUser());
@@ -86,6 +88,7 @@ const AdminPage: React.FC = () => {
             subItems: [
                 { id: 'all-staff', name: 'All Staff' },
                 // { id: 'add-staff', name: 'Add Staff' },
+                 { id: 'staff-roles', name: 'Staff Roles' },
                 // { id: 'staff-schedule', name: 'Schedule' },
                 // { id: 'departments', name: 'Departments' },
             ],
@@ -175,7 +178,7 @@ const AdminPage: React.FC = () => {
             ),
             subItems: [
                 { id: 'all-users', name: 'All Users' },
-                { id: 'add-user', name: 'Add User' },
+                // { id: 'add-user', name: 'Add User' },
                 { id: 'roles', name: 'Roles & Permissions' },
                 { id: 'activity-log', name: 'Activity Log' },
             ],
@@ -261,8 +264,8 @@ const AdminPage: React.FC = () => {
                 return <StaffPage />;
             case 'add-staff':
                 return <StaffPage />;
-            case 'staff-schedule':
-                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Staff Schedule</h3><p className="text-gray-600 mt-2">Staff scheduling coming soon...</p></div>;
+            case 'staff-roles':
+                return <StaffRolesPage />;
             case 'departments':
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Departments</h3><p className="text-gray-600 mt-2">Department management coming soon...</p></div>;
             
@@ -325,10 +328,10 @@ const AdminPage: React.FC = () => {
             case 'users':
             case 'all-users':
                 return <UsersPage />;
-            case 'add-user':
-                return <UsersPage />;
+            // case 'add-user':
+            //     return <UsersPage />;
             case 'roles':
-                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Roles & Permissions</h3><p className="text-gray-600 mt-2">Role management coming soon...</p></div>;
+                return <StaffRolesPage />;
             case 'activity-log':
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Activity Log</h3><p className="text-gray-600 mt-2">Activity logging coming soon...</p></div>;
             
@@ -351,27 +354,44 @@ const AdminPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Sidebar - Stripe-style */}
-            <aside className="w-72 bg-gray-900 text-gray-300 flex flex-col h-screen sticky top-0 border-r border-gray-800">
+            <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} bg-gray-900 text-gray-300 flex flex-col h-screen sticky top-0 border-r border-gray-800 transition-all duration-300`}>
+                {/* Toggle Button */}
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="absolute top-6 -right-3 bg-white text-gray-900 rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all z-10"
+                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {sidebarCollapsed ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    )}
+                  </svg>
+                </button>
                 {/* Header */}
-                <div className="p-6 border-b border-gray-800">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full overflow-hidden mb-4 shadow-lg">
+                <div className={`${sidebarCollapsed ? 'p-3' : 'p-6'} border-b border-gray-800`}>
+                    <div className={`flex items-center justify-between ${sidebarCollapsed ? 'mb-2' : 'mb-4'}`}>
+                        <div className={`flex items-center ${sidebarCollapsed ? 'justify-center w-full' : 'gap-2'}`}>
+                            <div className={`inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full overflow-hidden ${sidebarCollapsed ? 'mb-0' : 'mb-4'} shadow-lg`}>
   <img
     src="/citiedge-logo.png"
     alt="CITIEDGE Logo"
     className="w-full h-full object-cover"
   />
 </div>
-                            <div>
-                                <h1 className="text-white font-bold text-lg">CITIEDGE</h1>
-                                <p className="text-xs text-gray-500">Admin Portal</p>
-                            </div>
+                            {!sidebarCollapsed && (
+                              <div>
+                                  <h1 className="text-white font-bold text-lg">CITIEDGE</h1>
+                                  <p className="text-xs text-gray-500">Admin Portal</p>
+                              </div>
+                            )}
                         </div>
                     </div>
                     
                     {/* Search */}
-                    <div className="relative">
+                    {!sidebarCollapsed && (
+                      <div className="relative">
                         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -382,11 +402,12 @@ const AdminPage: React.FC = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                    </div>
+                      </div>
+                    )}
                 </div>
 
                 {/* Navigation Menu */}
-                <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+                <nav className={`flex-1 overflow-y-auto ${sidebarCollapsed ? 'p-2' : 'p-4'} space-y-1`}>
                     {menuItems.map((item) => (
                         <div key={item.id}>
                             <button
@@ -394,17 +415,18 @@ const AdminPage: React.FC = () => {
                                     toggleMenu(item.id);
                                     handleMenuClick(item.id);
                                 }}
-                                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                                className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-2 rounded-md text-sm transition-colors ${
                                     activeMenu === item.id && !activeSubMenu
                                         ? 'bg-gray-800 text-white'
                                         : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                 }`}
+                                title={sidebarCollapsed ? item.name : ''}
                             >
-                                <div className="flex items-center gap-3">
+                                <div className={`flex items-center ${sidebarCollapsed ? '' : 'gap-3'}`}>
                                     {item.icon}
-                                    <span className="font-medium">{item.name}</span>
+                                    {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
                                 </div>
-                                {item.subItems && (
+                                {item.subItems && !sidebarCollapsed && (
                                     <svg
                                         className={`w-4 h-4 transition-transform ${
                                             expandedMenus.includes(item.id) ? 'rotate-90' : ''
@@ -419,7 +441,7 @@ const AdminPage: React.FC = () => {
                             </button>
                             
                             {/* Sub-menu items */}
-                            {item.subItems && expandedMenus.includes(item.id) && (
+                            {item.subItems && expandedMenus.includes(item.id) && !sidebarCollapsed && (
                                 <div className="ml-4 mt-1 space-y-1 border-l border-gray-800 pl-3">
                                     {item.subItems.map((subItem) => (
                                         <button
@@ -441,28 +463,31 @@ const AdminPage: React.FC = () => {
                 </nav>
 
                 {/* User Profile & Logout */}
-                <div className="p-4 border-t border-gray-800">
-                    <div className="flex items-center gap-3 mb-3 px-3">
+                <div className={`${sidebarCollapsed ? 'p-2' : 'p-4'} border-t border-gray-800`}>
+                    <div className={`flex items-center ${sidebarCollapsed ? 'justify-center mb-2 px-0' : 'gap-3 mb-3 px-3'}`}>
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
                             {currentUser?.username?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'U'}
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">
-                                {currentUser?.username || currentUser?.email}
-                            </p>
-                            <p className="text-xs text-gray-500 capitalize truncate">
-                                {currentUser?.role?.replace('_', ' ')}
-                            </p>
-                        </div>
+                        {!sidebarCollapsed && (
+                          <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-white truncate">
+                                  {currentUser?.username || currentUser?.email}
+                              </p>
+                              <p className="text-xs text-gray-500 capitalize truncate">
+                                  {currentUser?.role?.replace('_', ' ')}
+                              </p>
+                          </div>
+                        )}
                     </div>
                     <button
                         onClick={logout}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                        className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3'} py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors`}
+                        title={sidebarCollapsed ? 'Logout' : ''}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        <span>Logout</span>
+                        {!sidebarCollapsed && <span>Logout</span>}
                     </button>
                 </div>
             </aside>

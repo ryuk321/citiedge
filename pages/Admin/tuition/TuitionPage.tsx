@@ -28,7 +28,10 @@ const TuitionPage: React.FC = () => {
         setLoading(true);
         const result = await tuitionAPI.getAll();
         if (result.success) {
-            setRecords(result.data);
+            // Ensure data is an array before setting
+            setRecords(Array.isArray(result.data) ? result.data : []);
+        } else {
+            setRecords([]);
         }
         setLoading(false);
     };
@@ -55,9 +58,11 @@ const TuitionPage: React.FC = () => {
         loadRecords();
     }, []);
 
-    const filteredRecords = records.filter((record) =>
-        filterStatus === 'all' ? true : record.status === filterStatus
-    );
+    const filteredRecords = Array.isArray(records) 
+        ? records.filter((record) =>
+            filterStatus === 'all' ? true : record.status === filterStatus
+        )
+        : [];
 
     return (
         <div className="space-y-6">

@@ -3,7 +3,9 @@ import { staffAPI } from '../../../lib/api';
 import Notification, { NotificationProps } from '../../../components/Notification';
 import { StaffInfo } from '../../../lib/DB_Table';
 import { useProtectedRoute, logout, getAuthUser } from '../../../lib/auth';
+import { STAFF_PAGES } from '../../../lib/staffPermissions';
 
+import bcrypt from 'bcryptjs';
 // ========== REUSABLE FORM SECTION COMPONENT (OUTSIDE MAIN COMPONENT) ==========
 const FormSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="space-y-4">
@@ -74,6 +76,13 @@ const StaffPage: React.FC = () => {
     const [selectedStaff, setSelectedStaff] = useState<StaffInfo | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [notification, setNotification] = useState<NotificationProps | null>(null);
+    
+    // ========== USER ACCOUNT & PERMISSIONS STATE ==========
+    const [createUserAccount, setCreateUserAccount] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+    const [userPassword, setUserPassword] = useState('');
+    const [userRole, setUserRole] = useState<'staff' | 'lecturer' | 'admin' | 'super_admin' | 'agent'>('staff');
+    const [selectedPermissions, setSelectedPermissions] = useState<{[pageId: string]: {canView: boolean, canEdit: boolean, canDelete: boolean}}>({})
 
     // ========== FORM DATA WITH ALL FIELDS ==========
     const initialFormData = {
@@ -133,12 +142,155 @@ const StaffPage: React.FC = () => {
 
     const handleAddStaff = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Create staff record
         const result = await staffAPI.create(formData);
         if (result.success) {
-            setNotification({ type: 'success', message: 'Staff member created successfully!', duration: 4000 });
+            // If user account creation is enabled, create user and permissions
+            if (createUserAccount && userEmail && userPassword) {
+                try {
+
+
+
+                    // Create user account via Next.js API proxy (avoids CORS issues)
+                    const PHP_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+                    const API_KEY = process.env.NEXT_PUBLIC_API_KEY as string;
+                    // console.log('Creating user account with URL:', userApiUrl);
+                    // console.log('User data:', {
+                    //     email: userEmail,
+                    //     username: `${formData.first_name} ${formData.last_name}`,
+                    //     role: userRole,
+                    //     reference_id: formData.staff_id,
+                    //     status: 'active'
+                    // });
+                    
+                    const userResponse = await fetch(`${PHP_API_URL}?action=createUser`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                             'X-API-KEY': API_KEY
+                        },
+                        body: JSON.stringify({
+                            email: userEmail,
+                            password: await bcrypt.hash(userPassword, 10),
+                            username: `${formData.first_name} ${formData.last_name}`,
+                            role: userRole,
+                            reference_id: formData.staff_id,
+                            status: 'active'
+                        })
+                    });
+                    
+                    const responseText = await userResponse.text();
+                    console.log('User creation raw response:', responseText);
+                    
+                    let userResult;
+                    try {
+                        userResult = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('Failed to parse user creation response:', parseError);
+                        setNotification({ 
+                            type: 'error', 
+                            message: 'Staff created, but user account API returned invalid response. Check console for details.', 
+                            duration: 6000 
+                        });
+                        throw parseError;
+                    }
+                    
+                    console.log('User creation result:', userResult);
+                    
+                    if (userResult.success) {
+                        // Create permissions for selected pages
+                        const userWithRef = currentUser as any;
+                        const grantedBy = userWithRef?.reference_id || userWithRef?.student_number || currentUser?.email || 'system';
+                        
+                        let permissionCount = 0;
+                        let permissionErrors = 0;
+                        
+                        for (const [pageId, perms] of Object.entries(selectedPermissions)) {
+                            if (perms.canView || perms.canEdit || perms.canDelete) {
+                                const page = STAFF_PAGES.find(p => p.pageId === pageId);
+                                if (page) {
+                                    try {
+                                        console.log('Creating permission for:', {
+                                            staff_id: formData.staff_id,
+                                            pageId: pageId,
+                                            page_name: page.pageName,
+                                            canView: perms.canView,
+                                            canEdit: perms.canEdit,
+                                            canDelete: perms.canDelete,
+                                            grantedBy: grantedBy
+                                        });
+                                        
+                                        const permResponse = await fetch('/api/staff/permissions', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                staff_id: formData.staff_id,
+                                                pageId: pageId,
+                                                page_name: page.pageName,
+                                                canView: perms.canView,
+                                                canEdit: perms.canEdit,
+                                                canDelete: perms.canDelete,
+                                                grantedBy: grantedBy
+                                            })
+                                        });
+                                        
+                                        const permResult = await permResponse.json();
+                                        console.log('Permission creation result:', permResult);
+                                        
+                                        if (permResult.success) {
+                                            permissionCount++;
+                                        } else {
+                                            console.error('Failed to create permission:', permResult.error);
+                                            permissionErrors++;
+                                        }
+                                    } catch (permError) {
+                                        console.error('Error creating permission:', permError);
+                                        permissionErrors++;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (permissionCount > 0) {
+                            setNotification({ 
+                                type: 'success', 
+                                message: `Staff and user account created! ${permissionCount} permissions granted${permissionErrors > 0 ? `, ${permissionErrors} failed` : ''}.`, 
+                                duration: 5000 
+                            });
+                        } else if (permissionErrors > 0) {
+                            setNotification({ 
+                                type: 'warning', 
+                                message: `Staff and user account created, but ${permissionErrors} permissions failed to save.`, 
+                                duration: 5000 
+                            });
+                        } else {
+                            setNotification({ type: 'success', message: 'Staff member and user account created (no permissions selected)!', duration: 4000 });
+                        }
+                    } else {
+                        setNotification({ type: 'error', message: 'Staff created, but user account failed: ' + (userResult.error || JSON.stringify(userResult)), duration: 6000 });
+                    }
+                } catch (error: any) {
+                    console.error('Error creating user account:', error);
+                    const errorMessage = error?.message || error?.toString() || 'Unknown error';
+                    setNotification({ 
+                        type: 'error', 
+                        message: `Staff created, but user account setup failed: ${errorMessage}. Check browser console for details.`, 
+                        duration: 6000 
+                    });
+                }
+            } else {
+                setNotification({ type: 'success', message: 'Staff member created successfully!', duration: 4000 });
+            }
+            
             loadStaff();
             setShowAddForm(false);
             setFormData(initialFormData);
+            setCreateUserAccount(false);
+            setUserEmail('');
+            setUserPassword('');
+            setUserRole('staff');
+            setSelectedPermissions({});
         } else {
             setNotification({ type: 'error', message: result.error || 'Failed to create staff member', duration: 4000 });
         }
@@ -216,6 +368,8 @@ const StaffPage: React.FC = () => {
     };
 
     useEffect(() => {
+        const user = getAuthUser();
+        setCurrentUser(user);
         loadStaff();
     }, []);
 
@@ -230,6 +384,17 @@ const StaffPage: React.FC = () => {
     // ========== HELPER FUNCTION TO UPDATE FORM ==========
     const updateFormField = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+    };
+    
+    const togglePermission = (pageId: string, type: 'canView' | 'canEdit' | 'canDelete', value: boolean) => {
+        setSelectedPermissions(prev => ({
+            ...prev,
+            [pageId]: {
+                canView: type === 'canView' ? value : (prev[pageId]?.canView || false),
+                canEdit: type === 'canEdit' ? value : (prev[pageId]?.canEdit || false),
+                canDelete: type === 'canDelete' ? value : (prev[pageId]?.canDelete || false)
+            }
+        }));
     };
 
     // ========== RENDER FORM ==========
@@ -292,6 +457,113 @@ const StaffPage: React.FC = () => {
                 <InputField label="Notes" name="notes" type="textarea" fullWidth value={formData.notes} onChange={updateFormField} />
             </FormSection>
 
+            {/* User Account Section (Only for Add Form) */}
+            {!isEdit && (
+                <div className="border-t pt-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <input
+                            type="checkbox"
+                            id="createUserAccount"
+                            checked={createUserAccount}
+                            onChange={(e) => setCreateUserAccount(e.target.checked)}
+                            className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="createUserAccount" className="text-base font-semibold text-gray-900">
+                            Create User Account & Set Permissions
+                        </label>
+                    </div>
+
+                    {createUserAccount && (
+                        <>
+                            <div className="bg-indigo-50 p-6 rounded-lg space-y-4 mb-6">
+                                <h4 className="text-sm font-semibold text-indigo-900 border-b border-indigo-200 pb-2">User Account Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <label className="flex flex-col">
+                                        <span className="text-sm text-gray-700 mb-1">Login Email <span className="text-red-500">*</span></span>
+                                        <input
+                                            type="email"
+                                            value={userEmail}
+                                            onChange={(e) => setUserEmail(e.target.value)}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 text-black"
+                                            placeholder="user@example.com"
+                                            required={createUserAccount}
+                                        />
+                                    </label>
+                                    <label className="flex flex-col">
+                                        <span className="text-sm text-gray-700 mb-1">Password <span className="text-red-500">*</span></span>
+                                        <input
+                                            type="password"
+                                            value={userPassword}
+                                            onChange={(e) => setUserPassword(e.target.value)}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 text-black"
+                                            placeholder="Enter password"
+                                            required={createUserAccount}
+                                        />
+                                    </label>
+                                    <label className="flex flex-col">
+                                        <span className="text-sm text-gray-700 mb-1">User Role <span className="text-red-500">*</span></span>
+                                        <select
+                                            value={userRole}
+                                            onChange={(e) => setUserRole(e.target.value as any)}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 text-black"
+                                        >
+                                            <option value="staff">Staff</option>
+                                            <option value="lecturer">Lecturer</option>
+                                            <option value="admin">Admin</option>
+                                            <option value="super_admin">Super Admin</option>
+                                            <option value="agent">Agent</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="bg-green-50 p-6 rounded-lg">
+                                <h4 className="text-sm font-semibold text-green-900 border-b border-green-200 pb-2 mb-4">Page Permissions</h4>
+                                <div className="space-y-3 max-h-96 overflow-y-auto">
+                                    {STAFF_PAGES.map((page) => (
+                                        <div key={page.pageId} className="bg-white p-4 rounded-lg border border-green-200">
+                                            <div className="mb-2">
+                                                <h5 className="font-medium text-gray-900">{page.pageName}</h5>
+                                                <p className="text-xs text-gray-500">{page.description}</p>
+                                            </div>
+                                            <div className="flex gap-6">
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedPermissions[page.pageId]?.canView || false}
+                                                        onChange={(e) => togglePermission(page.pageId, 'canView', e.target.checked)}
+                                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                                    />
+                                                    <span className="ml-2 text-sm text-gray-700">👁️ View</span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedPermissions[page.pageId]?.canEdit || false}
+                                                        onChange={(e) => togglePermission(page.pageId, 'canEdit', e.target.checked)}
+                                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                                    />
+                                                    <span className="ml-2 text-sm text-gray-700">✏️ Edit</span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedPermissions[page.pageId]?.canDelete || false}
+                                                        onChange={(e) => togglePermission(page.pageId, 'canDelete', e.target.checked)}
+                                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                                    />
+                                                    <span className="ml-2 text-sm text-gray-700">🗑️ Delete</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            )}
+
             <div className="flex gap-3 pt-4 border-t">
                 <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     {isEdit ? 'Update Staff' : 'Save Staff'}
@@ -302,6 +574,11 @@ const StaffPage: React.FC = () => {
                         isEdit ? setShowEditModal(false) : setShowAddForm(false);
                         setFormData(initialFormData);
                         setSelectedStaff(null);
+                        setCreateUserAccount(false);
+                        setUserEmail('');
+                        setUserPassword('');
+                        setUserRole('staff');
+                        setSelectedPermissions({});
                     }}
                     className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                 >
@@ -346,7 +623,7 @@ const StaffPage: React.FC = () => {
                         Add Staff
                     </button>
                     {/* User Profile & Logout */}
-                    <div className="flex items-center gap-3">
+                    {/* <div className="flex items-center gap-3">
                         <div className="text-right">
                             <p className="text-sm font-medium text-gray-900">{currentUser?.username || currentUser?.email}</p>
                             <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
@@ -367,7 +644,7 @@ const StaffPage: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 

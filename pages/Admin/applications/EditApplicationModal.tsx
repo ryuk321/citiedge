@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 
 interface Application {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   programme: string;
   status: string;
@@ -103,8 +103,8 @@ const EditApplicationModal: React.FC<EditApplicationModalProps> = ({ application
               <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName || ''}
+                name="first_name"
+                value={formData.first_name || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
               />
@@ -115,8 +115,8 @@ const EditApplicationModal: React.FC<EditApplicationModalProps> = ({ application
               <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName || ''}
+                name="last_name"
+                value={formData.last_name || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
               />

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 
 interface Application {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   programme: string;
   status: string;
@@ -14,6 +14,7 @@ interface Application {
   agentCompany?: string;
   agentName?: string;
   agentEmail?: string;
+    [key: string]: any;
 }
 
 interface PaginationData {
@@ -24,11 +25,12 @@ interface PaginationData {
 }
 
 interface ApplicationsTableProps {
+  onView?: (id: number) => void;
   onEdit?: (app: Application) => void;
   onDelete?: (id: number) => void;
 }
 
-const ApplicationsTable: React.FC<ApplicationsTableProps> = ({ onEdit, onDelete }) => {
+const ApplicationsTable: React.FC<ApplicationsTableProps> = ({ onView, onEdit, onDelete }) => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
@@ -57,6 +59,8 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({ onEdit, onDelete 
 
       const response = await fetch(`/api/applications/get-applications?${params}`);
       const data = await response.json();
+
+   
 
       if (data.success) {
         setApplications(data.data);
@@ -210,7 +214,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({ onEdit, onDelete 
                   <tr key={app.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {app.firstName} {app.lastName}
+                        {app.first_name} {app.last_name}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -241,6 +245,16 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({ onEdit, onDelete 
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => onView && onView(app.id)}
+                          className="inline-flex items-center gap-1 px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          View
+                        </button>
                         <button
                           onClick={() => onEdit && onEdit(app)}
                           className="inline-flex items-center gap-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm font-medium transition-colors"
