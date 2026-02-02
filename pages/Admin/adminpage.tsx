@@ -17,6 +17,8 @@ import AddStudent from './students/NewAddStudent';
 import OfqualEnrollmentsPage from './ofqual-enrollments/OfqualEnrollmentsPage';
 import ApplicationsPage from './applications/ApplicationsPage';
 import StaffRolesPage from './staff/StaffRolesPage';
+import AgentsPage from './agents/AgentsPage';
+import AgentRegisterForm from './agents/AgentRegisterForm';
 
 interface SubMenuItem {
     id: string;
@@ -166,6 +168,21 @@ const AdminPage: React.FC = () => {
                 { id: 'payment-history', name: 'Payment History' },
                 { id: 'financial-aid', name: 'Financial Aid' },
                 { id: 'billing', name: 'Billing' },
+            ],
+        },
+        {
+            id: 'agents',
+            name: 'Agents',
+            icon: (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            ),
+            subItems: [
+                { id: 'all-agents', name: 'All Agents' },
+                { id: 'register-agent', name: 'Register Agent' },
+                { id: 'agent-applications', name: 'Agent Applications' },
+                { id: 'agent-commissions', name: 'Commissions' },
             ],
         },
         {
@@ -323,6 +340,17 @@ const AdminPage: React.FC = () => {
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Financial Aid</h3><p className="text-gray-600 mt-2">Financial aid management coming soon...</p></div>;
             case 'billing':
                 return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Billing</h3><p className="text-gray-600 mt-2">Billing management coming soon...</p></div>;
+            
+            // Agents menu
+            case 'agents':
+            case 'all-agents':
+                return <AgentsPage />;
+            case 'register-agent':
+                return <AgentRegisterForm />;
+            case 'agent-applications':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Agent Applications</h3><p className="text-gray-600 mt-2">Agent applications management coming soon...</p></div>;
+            case 'agent-commissions':
+                return <div className="p-6 bg-white rounded-lg shadow"><h3 className="text-xl font-bold">Agent Commissions</h3><p className="text-gray-600 mt-2">Commission management coming soon...</p></div>;
             
             // Users menu
             case 'users':

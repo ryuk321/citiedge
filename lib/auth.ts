@@ -3,11 +3,18 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-const API_BASE_URL = 'https://citiedgecollege.co.uk/student_api.php';
+// Get API base URL from environment variable or use fallback
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
+  ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/student_api.php`
+  : 'https://citiedgecollege.co.uk/student_api.php';
+
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'super-secret-key';
 
 export interface AuthUser {
   id: string;
   student_number?: string;
+  staff_id?: string;
+  agent_id?: string;
   email: string;
   username: string;
   role: 'student' | 'staff' | 'lecturer' | 'admin' | 'super_admin' | 'agent';
@@ -17,27 +24,45 @@ export interface AuthUser {
 }
 
 /**
- * Login function - authenticates user with backend API
+ * Login function - authenticates user with backend PHP API
+ * Endpoint: student_api.php?action=login
+ * Security: Uses bcrypt password verification on server
  */
 export const login = async (email: string, password: string): Promise<{ success: boolean; user?: AuthUser; error?: string }> => {
   try {
+    // Validate email format before sending
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { success: false, error: 'Invalid email format' };
+    }
+
+    // Validate password is not empty
+    if (!password || password.length < 1) {
+      return { success: false, error: 'Password is required' };
+    }
+
     const response = await fetch(`${API_BASE_URL}?action=login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY as string,
+        'X-API-KEY': API_KEY,
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ 
+        email: email.toLowerCase().trim(), 
+        password: password 
+      }),
     });
 
     const result = await response.json();
 
     if (result.success && result.user) {
       const authUser: AuthUser = {
-        id: result.user.id,
+        id: result.user.id?.toString() || result.user.id,
         student_number: result.user.student_number,
+        staff_id: result.user.staff_id,
+        agent_id: result.user.agent_id,
         email: result.user.email,
-        username: result.user.username,
+        username: result.user.username || result.user.email,
         role: result.user.role,
         status: result.user.status,
         details: result.details,
@@ -49,11 +74,14 @@ export const login = async (email: string, password: string): Promise<{ success:
       
       return { success: true, user: authUser };
     } else {
-      return { success: false, error: result.error || 'Login failed' };
+      return { success: false, error: result.error || 'Invalid email or password' };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
-    return { success: false, error: 'Network error. Please try again.' };
+    return { 
+      success: false, 
+      error: error.message || 'Network error. Please check your connection and try again.' 
+    };
   }
 };
 
@@ -72,10 +100,12 @@ export const logout = (): void => {
  * Get current authenticated user from localStorage
  */
 export const getAuthUser = (): AuthUser | null => {
+  
   if (typeof window === 'undefined') return null;
   
   try {
     const userStr = localStorage.getItem('authUser');
+    // alert('Auth User String: ' + userStr);
     if (userStr) {
       return JSON.parse(userStr) as AuthUser;
     }
@@ -129,7 +159,7 @@ export const getRoleBasedPath = (role: string): string => {
     case 'student':
       return '/student/portal-new';
     case 'agent':
-      return '/Admin/adminpage';
+      return '/agent/portal';
     default:
       return '/Login/login';
   }

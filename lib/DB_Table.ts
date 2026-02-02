@@ -44,10 +44,231 @@ export interface User {
   password_hash: string;           // hashed password (never store plain text!)
   username?: string;                   // optional display name
   role: "student" | "admin" | "staff" | "super_admin" | "lecturer" | "agent"; // roles for access control
-  reference_id?: string;           // student_number or staff_id for linking to respective tables
+  reference_id?: string;           // student_number or staff_id or agent_id for linking to respective tables
   created_at: string;              // timestamp (ISO string from DB)
   updated_at: string;    
   status: string;                  // active, inactive, suspended
+}
+
+// Agent/Recruitment Partner Information
+export interface Agent {
+  // Primary Key
+  id?: number;
+  
+  // Agent Identification
+  agent_id: string;                                           // Unique agent ID (e.g., AGT-2024-001)
+  agent_code?: string;                                        // Short code for agent (e.g., ABC123)
+  
+  // Company/Organization Information
+  company_name: string;
+  company_registration_number?: string;
+  company_type?: "individual" | "agency" | "institution" | "partner";
+  
+  // Contact Person Details
+  contact_person_title?: "Mr" | "Mrs" | "Ms" | "Dr" | "Prof";
+  contact_person_first_name: string;
+  contact_person_last_name: string;
+  contact_person_position?: string;
+  
+  // Contact Information
+  email: string;                                              // Primary contact email (used for login)
+  phone?: string;
+  mobile?: string;
+  whatsapp?: string;
+  
+  // Address Information
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  state_province?: string;
+  postal_code?: string;
+  country: string;
+  
+  // Business Details
+  website?: string;
+  operating_countries?: string;                               // JSON array of countries
+  specialization?: string;
+  years_in_business?: number;
+  
+  // Commission & Financial
+  commission_rate?: number;
+  payment_method?: "bank_transfer" | "paypal" | "stripe" | "check" | "other";
+  bank_name?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
+  bank_swift_code?: string;
+  tax_id_number?: string;
+  
+  // Agreement & Legal
+  contract_start_date?: string;                               // YYYY-MM-DD
+  contract_end_date?: string;                                 // YYYY-MM-DD
+  contract_status?: "active" | "expired" | "terminated" | "pending";
+  agreement_document_url?: string;
+  
+  // Performance Metrics
+  total_applications?: number;
+  successful_enrollments?: number;
+  pending_applications?: number;
+  rejected_applications?: number;
+  conversion_rate?: number;
+  
+  // Login & Security
+  password_hash: string;
+  last_login?: string;
+  login_attempts?: number;
+  account_locked?: boolean;
+  
+  // Status & Settings
+  status?: "active" | "inactive" | "suspended" | "pending_approval";
+  verification_status?: "verified" | "unverified" | "under_review";
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  
+  // Permissions & Access
+  portal_access?: boolean;
+  can_submit_applications?: boolean;
+  can_view_commission?: boolean;
+  requires_admin_approval?: boolean;
+  
+  // Notifications & Preferences
+  notification_email?: boolean;
+  notification_sms?: boolean;
+  notification_whatsapp?: boolean;
+  preferred_language?: string;
+  timezone?: string;
+  
+  // Supporting Documents
+  business_license_url?: string;
+  identity_document_url?: string;
+  proof_of_address_url?: string;
+  reference_letter_url?: string;
+  
+  // Notes & Remarks
+  admin_notes?: string;
+  agent_notes?: string;
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+  created_by?: string;
+  updated_by?: string;
+}
+
+// Agent Applications
+export interface AgentApplication {
+  id?: number;
+  
+  // Link to agent
+  agent_id: string;
+  agent_name: string;
+  
+  // Application Details
+  application_id: string;
+  student_first_name: string;
+  student_last_name: string;
+  student_email: string;
+  student_phone?: string;
+  
+  // Course Information
+  programme: string;
+  course_level?: string;
+  intake?: string;
+  start_date?: string;                                        // YYYY-MM-DD
+  
+  // Application Status
+  status?: "draft" | "submitted" | "under_review" | "approved" | "rejected" | "enrolled" | "withdrawn";
+  submission_date?: string;
+  review_date?: string;
+  decision_date?: string;
+  
+  // Commission
+  tuition_fee?: number;
+  commission_amount?: number;
+  commission_status?: "pending" | "approved" | "paid" | "cancelled";
+  commission_paid_date?: string;                              // YYYY-MM-DD
+  
+  // Application Data
+  application_data?: string;                                   // JSON string
+  documents_uploaded?: number;
+  
+  // Notes
+  admin_notes?: string;
+  agent_notes?: string;
+  rejection_reason?: string;
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Agent Notifications
+export interface AgentNotification {
+  id?: number;
+  agent_id: string;
+  
+  // Notification Details
+  title: string;
+  message: string;
+  type?: "info" | "success" | "warning" | "error" | "application_update" | "commission" | "system";
+  priority?: "low" | "medium" | "high" | "urgent";
+  
+  // Status
+  is_read?: boolean;
+  read_at?: string;
+  
+  // Link to related entity
+  related_entity_type?: string;
+  related_entity_id?: string;
+  
+  // Action Button
+  action_url?: string;
+  action_label?: string;
+  
+  // Metadata
+  created_at?: string;
+  expires_at?: string;
+}
+
+// Agent Commission Payments
+export interface AgentCommissionPayment {
+  id?: number;
+  
+  // Agent Reference
+  agent_id: string;
+  agent_name: string;
+  
+  // Payment Details
+  payment_id: string;
+  payment_period_start: string;                               // YYYY-MM-DD
+  payment_period_end: string;                                 // YYYY-MM-DD
+  
+  // Amounts
+  total_applications?: number;
+  successful_enrollments?: number;
+  total_tuition_fees?: number;
+  commission_rate: number;
+  commission_amount: number;
+  tax_deduction?: number;
+  net_payment: number;
+  
+  // Payment Status
+  status?: "pending" | "processing" | "paid" | "cancelled" | "on_hold";
+  payment_method?: string;
+  payment_date?: string;                                      // YYYY-MM-DD
+  transaction_reference?: string;
+  
+  // Bank Details
+  bank_name?: string;
+  account_number?: string;
+  
+  // Notes
+  notes?: string;
+  admin_notes?: string;
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+  processed_by?: string;
 }
 
 export interface StaffInfo {

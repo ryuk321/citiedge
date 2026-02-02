@@ -77,7 +77,7 @@ export default function Home() {
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-3">Staff</h4>
                 <p className="text-gray-600 mb-6">Manage classes, students, attendance, and academic records</p>
-                <a href="/staff/portal" className="inline-block w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors text-center">
+                <a href="/staff/new/portal" className="inline-block w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors text-center">
                   Staff Login
                 </a>
               </div>
@@ -94,7 +94,7 @@ export default function Home() {
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-3">Agent</h4>
                 <p className="text-gray-600 mb-6">Manage admissions, applications, and student recruitment</p>
-                <a href="/agent/login" className="inline-block w-full bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors text-center">
+                <a href="/agent/portal" className="inline-block w-full bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors text-center">
                   Agent Login
                 </a>
               </div>
