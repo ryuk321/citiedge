@@ -92,7 +92,7 @@ export default function AgentPortal() {
     } catch (error) {
       // console.error('Error loading agent data:', error);
       // If there's an error loading data, might be auth issue
-      alert('Failed to load agent data. Please try logging in again.');
+      alert('Failed to load agent data. Please try logging in again. Please contact the administrator if the issue persists.');
       logout();
       router.push('/Login/login');
     } finally {
