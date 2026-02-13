@@ -57,7 +57,11 @@ const Footer: React.FC = () => {
                 <span className="italic">(Proposed for March 2026 Academic Session)</span>
               </li>
               <li>
-                Registered Address: No.1-2 Craven Road, Ealing, London W5 2UA
+                The Trampery Tottenham
+639 High Road
+London
+N17 8AA
+(Units 2, 39, 42)
               </li>
             </ul>
           </div>
