@@ -53,10 +53,7 @@ const Footer: React.FC = () => {
               <li>Email: enquiry@citiedgecollege.co.uk </li>
               <li>Phone/WhatsApp: +44 (0)7454 289604</li>
               <li>
-                Campus Address: 2-16 Bayford Street, E8 3SE <br />
-                <span className="italic">(Proposed for March 2026 Academic Session)</span>
-              </li>
-              <li>
+                Campus Address: 
                 The Trampery Tottenham
 639 High Road
 London
