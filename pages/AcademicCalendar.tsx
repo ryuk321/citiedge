@@ -200,6 +200,7 @@ const AcademicCalendar: React.FC = () => {
                   <option value="january_2026">January 2026</option>
                   <option value="march_2026">March 2026</option>
                   <option value="september_2026">September 2026</option>
+                     <option value="january_2026">January 2027</option>
                 </select>
               </div>
 
