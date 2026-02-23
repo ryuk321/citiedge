@@ -166,7 +166,7 @@ const AcademicCalendar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-cyan-200">
-              Academic Calendar
+              Proposed Academic Calendar
             </h1>
             <p className="text-xl text-blue-100 mb-2">Academic Year: January 2026 – August 2027</p>
             <p className="text-lg text-blue-200 mb-8">
