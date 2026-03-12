@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { loadStripe, PaymentIntent } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import Notification from '../../../components/Notification';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -36,6 +37,10 @@ export default function Finance({ studentId, studentName, studentEmail }: Financ
   const [tuitionFees, setTuitionFees] = useState<TuitionFee[]>([]);
   const [paymentHistory, setPaymentHistory] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error' | 'info' | 'warning';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
   
@@ -118,6 +123,16 @@ export default function Finance({ studentId, studentName, studentEmail }: Financ
 
   return (
     <div className="p-6">
+      {/* Payment Success Notification */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={5000}
+        />
+      )}
+      
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Finance & Payments</h1>
@@ -189,6 +204,7 @@ export default function Finance({ studentId, studentName, studentEmail }: Financ
             studentEmail={studentEmail}
             tuitionFees={tuitionFees}
             onPaymentSuccess={fetchFinanceData}
+            setNotification={setNotification}
           />
         </Elements>
       )}
@@ -272,7 +288,7 @@ function TuitionFeesOverview({ fees, onPayClick }: { fees: TuitionFee[]; onPayCl
   );
 }
 
-function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaymentSuccess }: any) {
+function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaymentSuccess, setNotification }: any) {
   const stripe = useStripe();
   const elements = useElements();
   const [amount, setAmount] = useState('');
@@ -327,7 +343,12 @@ function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaym
       // console.log('Response Status:', response.status);
 
       if (!response.ok) {
-        setError(responseData.error || `Server error: ${response.status}`);
+        const errorMsg = responseData.error || `Server error: ${response.status}`;
+        setError(errorMsg);
+        setNotification({
+          type: 'error',
+          message: errorMsg
+        });
         setProcessing(false);
         return;
       }
@@ -336,12 +357,21 @@ function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaym
 
       if (apiError) {
         setError(apiError);
+        setNotification({
+          type: 'error',
+          message: apiError
+        });
         setProcessing(false);
         return;
       }
 
       if (!clientSecret) {
-        setError('No client secret received from server');
+        const errorMsg = 'No client secret received from server';
+        setError(errorMsg);
+        setNotification({
+          type: 'error',
+          message: errorMsg
+        });
         setProcessing(false);
         return;
       }
@@ -361,7 +391,12 @@ function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaym
 
       if (stripeError) {
         console.error('Stripe error:', stripeError);
-        setError(stripeError.message || 'Payment failed');
+        const errorMsg = stripeError.message || 'Payment failed';
+        setError(errorMsg);
+        setNotification({
+          type: 'error',
+          message: errorMsg
+        });
         setProcessing(false);
         return;
       }
@@ -407,14 +442,30 @@ function PaymentForm({ studentId, studentName, studentEmail, tuitionFees, onPaym
         setSuccess(true);
         setAmount('');
         cardElement.clear();
+        
+        // Show success notification
+        setNotification({
+          type: 'success',
+          message: `Payment of £${parseFloat(amount).toFixed(2)} processed successfully! 🎉`
+        });
+        
         onPaymentSuccess();
         setTimeout(() => setSuccess(false), 5000);
       } else {
         setError('Payment succeeded but failed to save. Please contact support.');
+        setNotification({
+          type: 'warning',
+          message: 'Payment succeeded but failed to save. Please contact support.'
+        });
       }
     } catch (err: any) {
       console.error('Payment error:', err);
-      setError(err.message || 'Payment failed');
+      const errorMsg = err.message || 'Payment failed';
+      setError(errorMsg);
+      setNotification({
+        type: 'error',
+        message: errorMsg
+      });
     } finally {
       setProcessing(false);
     }

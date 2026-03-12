@@ -1402,15 +1402,200 @@ function ProfileTab({ agent }: { agent: Agent }) {
 }
 
 function SettingsTab() {
+  const [currentUser, setCurrentUser] = useState<ReturnType<typeof getAuthUser>>(null);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    const user = getAuthUser();
+    setCurrentUser(user);
+  }, []);
+
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    return null;
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setMessage({ type: 'error', text: 'All fields are required' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setMessage({ type: 'error', text: passwordError });
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setMessage({ type: 'error', text: 'New password must be different from current password' });
+      return;
+    }
+
+    if (!currentUser?.reference_id) {
+      setMessage({ type: 'error', text: 'User session not found. Please log in again.' });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/agent/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agent_id: currentUser.reference_id,
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Password changed successfully!' });
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to change password' });
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="settings-tab">
       <h2>⚙️ Settings</h2>
       <p className="subtitle">Manage your account settings</p>
       
       <div className="card">
-        <p style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-          Settings interface will be displayed here
-        </p>
+        <h3>🔒 Change Password</h3>
+        <p className="section-description">Update your password to keep your account secure</p>
+        
+        {message && (
+          <div className={`message ${message.type}`}>
+            {message.type === 'success' ? '✅' : '❌'} {message.text}
+          </div>
+        )}
+
+        <form onSubmit={handleChangePassword} className="password-form">
+          <div className="form-group">
+            <label htmlFor="currentPassword">Current Password</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showCurrentPassword ? 'text' : 'password'}
+                id="currentPassword"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter your current password"
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                tabIndex={-1}
+              >
+                {showCurrentPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newPassword">New Password</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter your new password"
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                tabIndex={-1}
+              >
+                {showNewPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
+            <small className="hint">
+              Must be at least 8 characters with uppercase, lowercase, and numbers
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm New Password</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your new password"
+                disabled={loading}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner-small"></span>
+                Changing Password...
+              </>
+            ) : (
+              'Change Password'
+            )}
+          </button>
+        </form>
       </div>
 
       <style jsx>{`
@@ -1430,6 +1615,166 @@ function SettingsTab() {
           padding: 2rem;
           border-radius: 12px;
           box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          max-width: 600px;
+        }
+
+        .card h3 {
+          font-size: 1.3rem;
+          color: #1a202c;
+          margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+          color: #64748b;
+          margin-bottom: 1.5rem;
+          font-size: 0.95rem;
+        }
+
+        .message {
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+          font-weight: 500;
+          animation: slideIn 0.3s ease-out;
+        }
+
+        .message.success {
+          background: #d1fae5;
+          color: #065f46;
+          border: 1px solid #10b981;
+        }
+
+        .message.error {
+          background: #fee2e2;
+          color: #991b1b;
+          border: 1px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .password-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        label {
+          font-weight: 600;
+          color: #1a202c;
+          font-size: 0.95rem;
+        }
+
+        .password-input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        input {
+          width: 100%;
+          padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          transition: all 0.3s;
+          font-family: inherit;
+        }
+
+        input:focus {
+          outline: none;
+          border-color: #0052a3;
+          box-shadow: 0 0 0 3px rgba(0, 82, 163, 0.1);
+        }
+
+        input:disabled {
+          background: #f1f5f9;
+          cursor: not-allowed;
+        }
+
+        .toggle-password {
+          position: absolute;
+          right: 0.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1.2rem;
+          padding: 0.25rem;
+          opacity: 0.6;
+          transition: opacity 0.2s;
+        }
+
+        .toggle-password:hover {
+          opacity: 1;
+        }
+
+        .hint {
+          color: #64748b;
+          font-size: 0.85rem;
+          margin-top: -0.25rem;
+        }
+
+        .submit-btn {
+          padding: 0.875rem 1.5rem;
+          background: #0052a3;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s;
+          margin-top: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+          background: #003d7a;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 82, 163, 0.3);
+        }
+
+        .submit-btn:disabled {
+          background: #94a3b8;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .spinner-small {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top: 2px solid white;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+          .card {
+            padding: 1.5rem;
+          }
         }
       `}</style>
     </div>

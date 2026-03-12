@@ -21,6 +21,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import Notification from '../../components/Notification';
 
 // Load Stripe publishable key (safe to use in frontend)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -29,8 +30,23 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 // MAIN PAYMENTS PAGE COMPONENT
 // ========================================
 export default function StudentPaymentsPage() {
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error' | 'info' | 'warning';
+    message: string;
+  } | null>(null);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Payment Success Notification */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+          duration={5000}
+        />
+      )}
+      
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
         <div className="text-center mb-8">
@@ -59,7 +75,7 @@ export default function StudentPaymentsPage() {
 
         {/* Payment Form with Stripe Elements */}
         <Elements stripe={stripePromise}>
-          <PaymentForm />
+          <PaymentForm setNotification={setNotification} />
         </Elements>
 
         {/* Payment History */}
@@ -72,7 +88,7 @@ export default function StudentPaymentsPage() {
 // ========================================
 // PAYMENT FORM COMPONENT
 // ========================================
-function PaymentForm() {
+function PaymentForm({ setNotification }: { setNotification: (notification: { type: 'success' | 'error' | 'info' | 'warning'; message: string; } | null) => void }) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -176,6 +192,12 @@ function PaymentForm() {
         setMessage(`Payment successful! Amount: £${amount}`);
         setMessageType('success');
         
+        // Show success notification
+        setNotification({
+          type: 'success',
+          message: `Payment of £${parseFloat(amount).toFixed(2)} processed successfully! 🎉`
+        });
+        
         // Reset form
         setAmount('');
         setDescription('');
@@ -185,8 +207,15 @@ function PaymentForm() {
         window.dispatchEvent(new Event('paymentSuccess'));
       }
     } catch (error: any) {
-      setMessage(error.message || 'Payment failed. Please try again.');
+      const errorMsg = error.message || 'Payment failed. Please try again.';
+      setMessage(errorMsg);
       setMessageType('error');
+      
+      // Show error notification
+      setNotification({
+        type: 'error',
+        message: errorMsg
+      });
     } finally {
       setIsProcessing(false);
     }
