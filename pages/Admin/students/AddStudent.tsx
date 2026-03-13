@@ -544,6 +544,7 @@ const AddStudent: React.FC = () => {
                     required
                   >
                     <option value="">Select Course</option>
+                    <option value="1">MSc in Public Health</option>
                     <option value="1">BSc Computer Science</option>
                     <option value="2">BSc Business Management</option>
                     <option value="3">MSc Data Science</option>
@@ -565,7 +566,7 @@ const AddStudent: React.FC = () => {
                   >
                     <option value="">Select Intake</option>
                     <option value="January 2026">January 2026</option>
-                    <option value="March 2026">March 2026</option>
+                    <option value="May 2026">May 2026</option>
                     <option value="September 2026">September 2026</option>
                   </select>
                 </label>
