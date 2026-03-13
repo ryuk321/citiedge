@@ -172,19 +172,19 @@ export default function Profile({ studentId, studentName, studentEmail }: Profil
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-slate-600">Program</span>
-              <span className="font-medium text-black">BSc Computer Science</span>
+              <span className="font-medium text-black">...</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Year</span>
-              <span className="font-medium text-black">2nd Year</span>
+              <span className="font-medium text-black">...</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Enrollment Date</span>
-              <span className="font-medium text-black">September 2024</span>
+              <span className="font-medium text-black">...</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Expected Graduation</span>
-              <span className="font-medium text-black">June 2027</span>
+              <span className="font-medium text-black">...</span>
             </div>
           </div>
         </div>
